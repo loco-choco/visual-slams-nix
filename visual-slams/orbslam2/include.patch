@@ -1,0 +1,2590 @@
+diff --git a/include/Converter.h b/include/Converter.h
+index 0002ad6..cdd6af8 100644
+--- a/include/Converter.h
++++ b/include/Converter.h
+@@ -24,8 +24,8 @@
+ #include<opencv2/core/core.hpp>
+ 
+ #include<Eigen/Dense>
+-#include"Thirdparty/g2o/g2o/types/types_six_dof_expmap.h"
+-#include"Thirdparty/g2o/g2o/types/types_seven_dof_expmap.h"
++#include<g2o/types/sba/types_six_dof_expmap.h>
++#include<g2o/types/sim3/types_seven_dof_expmap.h>
+ 
+ namespace ORB_SLAM2
+ {
+diff --git a/include/Frame.h b/include/Frame.h
+index a6a8032..a92961b 100644
+--- a/include/Frame.h
++++ b/include/Frame.h
+@@ -24,8 +24,8 @@
+ #include<vector>
+ 
+ #include "MapPoint.h"
+-#include "Thirdparty/DBoW2/DBoW2/BowVector.h"
+-#include "Thirdparty/DBoW2/DBoW2/FeatureVector.h"
++#include <DBoW2/BowVector.h>
++#include <DBoW2/FeatureVector.h>
+ #include "ORBVocabulary.h"
+ #include "KeyFrame.h"
+ #include "ORBextractor.h"
+@@ -86,7 +86,7 @@ public:
+     // Compute the cell of a keypoint (return false if outside the grid)
+     bool PosInGrid(const cv::KeyPoint &kp, int &posX, int &posY);
+ 
+-    vector<size_t> GetFeaturesInArea(const float &x, const float  &y, const float  &r, const int minLevel=-1, const int maxLevel=-1) const;
++    std::vector<size_t> GetFeaturesInArea(const float &x, const float  &y, const float  &r, const int minLevel=-1, const int maxLevel=-1) const;
+ 
+     // Search a match for each keypoint in the left image to a keypoint in the right image.
+     // If there is a match, depth is computed and the right coordinate associated to the left keypoint is stored.
+@@ -174,10 +174,10 @@ public:
+     int mnScaleLevels;
+     float mfScaleFactor;
+     float mfLogScaleFactor;
+-    vector<float> mvScaleFactors;
+-    vector<float> mvInvScaleFactors;
+-    vector<float> mvLevelSigma2;
+-    vector<float> mvInvLevelSigma2;
++    std::vector<float> mvScaleFactors;
++    std::vector<float> mvInvScaleFactors;
++    std::vector<float> mvLevelSigma2;
++    std::vector<float> mvInvLevelSigma2;
+ 
+     // Undistorted Image Bounds (computed once).
+     static float mnMinX;
+diff --git a/include/FrameDrawer.h b/include/FrameDrawer.h
+index 95c1df9..419ebd0 100644
+--- a/include/FrameDrawer.h
++++ b/include/FrameDrawer.h
+@@ -55,12 +55,12 @@ protected:
+     // Info of the frame to be drawn
+     cv::Mat mIm;
+     int N;
+-    vector<cv::KeyPoint> mvCurrentKeys;
+-    vector<bool> mvbMap, mvbVO;
++    std::vector<cv::KeyPoint> mvCurrentKeys;
++    std::vector<bool> mvbMap, mvbVO;
+     bool mbOnlyTracking;
+     int mnTracked, mnTrackedVO;
+-    vector<cv::KeyPoint> mvIniKeys;
+-    vector<int> mvIniMatches;
++    std::vector<cv::KeyPoint> mvIniKeys;
++    std::vector<int> mvIniMatches;
+     int mState;
+ 
+     Map* mpMap;
+diff --git a/include/Initializer.h b/include/Initializer.h
+index 09b27a6..78995e1 100644
+--- a/include/Initializer.h
++++ b/include/Initializer.h
+@@ -30,7 +30,7 @@ namespace ORB_SLAM2
+ // THIS IS THE INITIALIZER FOR MONOCULAR SLAM. NOT USED IN THE STEREO OR RGBD CASE.
+ class Initializer
+ {
+-    typedef pair<int,int> Match;
++    typedef std::pair<int,int> Match;
+ 
+ public:
+ 
+@@ -39,48 +39,48 @@ public:
+ 
+     // Computes in parallel a fundamental matrix and a homography
+     // Selects a model and tries to recover the motion and the structure from motion
+-    bool Initialize(const Frame &CurrentFrame, const vector<int> &vMatches12,
+-                    cv::Mat &R21, cv::Mat &t21, vector<cv::Point3f> &vP3D, vector<bool> &vbTriangulated);
++    bool Initialize(const Frame &CurrentFrame, const std::vector<int> &vMatches12,
++                    cv::Mat &R21, cv::Mat &t21, std::vector<cv::Point3f> &vP3D, std::vector<bool> &vbTriangulated);
+ 
+ 
+ private:
+ 
+-    void FindHomography(vector<bool> &vbMatchesInliers, float &score, cv::Mat &H21);
+-    void FindFundamental(vector<bool> &vbInliers, float &score, cv::Mat &F21);
++    void FindHomography(std::vector<bool> &vbMatchesInliers, float &score, cv::Mat &H21);
++    void FindFundamental(std::vector<bool> &vbInliers, float &score, cv::Mat &F21);
+ 
+-    cv::Mat ComputeH21(const vector<cv::Point2f> &vP1, const vector<cv::Point2f> &vP2);
+-    cv::Mat ComputeF21(const vector<cv::Point2f> &vP1, const vector<cv::Point2f> &vP2);
++    cv::Mat ComputeH21(const std::vector<cv::Point2f> &vP1, const std::vector<cv::Point2f> &vP2);
++    cv::Mat ComputeF21(const std::vector<cv::Point2f> &vP1, const std::vector<cv::Point2f> &vP2);
+ 
+-    float CheckHomography(const cv::Mat &H21, const cv::Mat &H12, vector<bool> &vbMatchesInliers, float sigma);
++    float CheckHomography(const cv::Mat &H21, const cv::Mat &H12, std::vector<bool> &vbMatchesInliers, float sigma);
+ 
+-    float CheckFundamental(const cv::Mat &F21, vector<bool> &vbMatchesInliers, float sigma);
++    float CheckFundamental(const cv::Mat &F21, std::vector<bool> &vbMatchesInliers, float sigma);
+ 
+-    bool ReconstructF(vector<bool> &vbMatchesInliers, cv::Mat &F21, cv::Mat &K,
+-                      cv::Mat &R21, cv::Mat &t21, vector<cv::Point3f> &vP3D, vector<bool> &vbTriangulated, float minParallax, int minTriangulated);
++    bool ReconstructF(std::vector<bool> &vbMatchesInliers, cv::Mat &F21, cv::Mat &K,
++                      cv::Mat &R21, cv::Mat &t21, std::vector<cv::Point3f> &vP3D, std::vector<bool> &vbTriangulated, float minParallax, int minTriangulated);
+ 
+-    bool ReconstructH(vector<bool> &vbMatchesInliers, cv::Mat &H21, cv::Mat &K,
+-                      cv::Mat &R21, cv::Mat &t21, vector<cv::Point3f> &vP3D, vector<bool> &vbTriangulated, float minParallax, int minTriangulated);
++    bool ReconstructH(std::vector<bool> &vbMatchesInliers, cv::Mat &H21, cv::Mat &K,
++                      cv::Mat &R21, cv::Mat &t21, std::vector<cv::Point3f> &vP3D, std::vector<bool> &vbTriangulated, float minParallax, int minTriangulated);
+ 
+     void Triangulate(const cv::KeyPoint &kp1, const cv::KeyPoint &kp2, const cv::Mat &P1, const cv::Mat &P2, cv::Mat &x3D);
+ 
+-    void Normalize(const vector<cv::KeyPoint> &vKeys, vector<cv::Point2f> &vNormalizedPoints, cv::Mat &T);
++    void Normalize(const std::vector<cv::KeyPoint> &vKeys, std::vector<cv::Point2f> &vNormalizedPoints, cv::Mat &T);
+ 
+-    int CheckRT(const cv::Mat &R, const cv::Mat &t, const vector<cv::KeyPoint> &vKeys1, const vector<cv::KeyPoint> &vKeys2,
+-                       const vector<Match> &vMatches12, vector<bool> &vbInliers,
+-                       const cv::Mat &K, vector<cv::Point3f> &vP3D, float th2, vector<bool> &vbGood, float &parallax);
++    int CheckRT(const cv::Mat &R, const cv::Mat &t, const std::vector<cv::KeyPoint> &vKeys1, const std::vector<cv::KeyPoint> &vKeys2,
++                       const std::vector<Match> &vMatches12, std::vector<bool> &vbInliers,
++                       const cv::Mat &K, std::vector<cv::Point3f> &vP3D, float th2, std::vector<bool> &vbGood, float &parallax);
+ 
+     void DecomposeE(const cv::Mat &E, cv::Mat &R1, cv::Mat &R2, cv::Mat &t);
+ 
+ 
+     // Keypoints from Reference Frame (Frame 1)
+-    vector<cv::KeyPoint> mvKeys1;
++    std::vector<cv::KeyPoint> mvKeys1;
+ 
+     // Keypoints from Current Frame (Frame 2)
+-    vector<cv::KeyPoint> mvKeys2;
++    std::vector<cv::KeyPoint> mvKeys2;
+ 
+     // Current Matches from Reference to Current
+-    vector<Match> mvMatches12;
+-    vector<bool> mvbMatched1;
++    std::vector<Match> mvMatches12;
++    std::vector<bool> mvbMatched1;
+ 
+     // Calibration
+     cv::Mat mK;
+@@ -92,7 +92,7 @@ private:
+     int mMaxIterations;
+ 
+     // Ransac sets
+-    vector<vector<size_t> > mvSets;   
++    std::vector<std::vector<size_t> > mvSets;   
+ 
+ };
+ 
+diff --git a/include/KeyFrame.h b/include/KeyFrame.h
+index 67f4348..7f3342e 100644
+--- a/include/KeyFrame.h
++++ b/include/KeyFrame.h
+@@ -22,8 +22,8 @@
+ #define KEYFRAME_H
+ 
+ #include "MapPoint.h"
+-#include "Thirdparty/DBoW2/DBoW2/BowVector.h"
+-#include "Thirdparty/DBoW2/DBoW2/FeatureVector.h"
++#include <DBoW2/BowVector.h>
++#include <DBoW2/FeatureVector.h>
+ #include "ORBVocabulary.h"
+ #include "ORBextractor.h"
+ #include "Frame.h"
+diff --git a/include/KeyFrameDatabase.h b/include/KeyFrameDatabase.h
+index fa37357..22a5920 100644
+--- a/include/KeyFrameDatabase.h
++++ b/include/KeyFrameDatabase.h
+@@ -1,4 +1,4 @@
+-/**
++/*
+ * This file is part of ORB-SLAM2.
+ *
+ * Copyright (C) 2014-2016 Raúl Mur-Artal <raulmur at unizar dot es> (University of Zaragoza)
+@@ -63,7 +63,7 @@ protected:
+   const ORBVocabulary* mpVoc;
+ 
+   // Inverted file
+-  std::vector<list<KeyFrame*> > mvInvertedFile;
++  std::vector<std::list<KeyFrame*> > mvInvertedFile;
+ 
+   // Mutex
+   std::mutex mMutex;
+diff --git a/include/LocalMapping.h b/include/LocalMapping.h
+index 1361a57..63d24ab 100644
+--- a/include/LocalMapping.h
++++ b/include/LocalMapping.h
+@@ -68,7 +68,7 @@ public:
+     bool isFinished();
+ 
+     int KeyframesInQueue(){
+-        unique_lock<std::mutex> lock(mMutexNewKFs);
++        std::unique_lock<std::mutex> lock(mMutexNewKFs);
+         return mlNewKeyFrames.size();
+     }
+ 
+diff --git a/include/LoopClosing.h b/include/LoopClosing.h
+index 7eb0416..c950b96 100644
+--- a/include/LoopClosing.h
++++ b/include/LoopClosing.h
+@@ -31,7 +31,7 @@
+ 
+ #include <thread>
+ #include <mutex>
+-#include "Thirdparty/g2o/g2o/types/types_seven_dof_expmap.h"
++#include <g2o/types/sim3/types_seven_dof_expmap.h>
+ 
+ namespace ORB_SLAM2
+ {
+@@ -45,9 +45,9 @@ class LoopClosing
+ {
+ public:
+ 
+-    typedef pair<set<KeyFrame*>,int> ConsistentGroup;    
+-    typedef map<KeyFrame*,g2o::Sim3,std::less<KeyFrame*>,
+-        Eigen::aligned_allocator<std::pair<const KeyFrame*, g2o::Sim3> > > KeyFrameAndPose;
++    typedef std::pair<std::set<KeyFrame*>,int> ConsistentGroup;    
++    typedef std::map< KeyFrame*, g2o::Sim3, std::less<KeyFrame*>,
++        Eigen::aligned_allocator<std::pair<const KeyFrame*, g2o::Sim3>> > KeyFrameAndPose;
+ 
+ public:
+ 
+@@ -68,11 +68,11 @@ public:
+     void RunGlobalBundleAdjustment(unsigned long nLoopKF);
+ 
+     bool isRunningGBA(){
+-        unique_lock<std::mutex> lock(mMutexGBA);
++        std::unique_lock<std::mutex> lock(mMutexGBA);
+         return mbRunningGBA;
+     }
+     bool isFinishedGBA(){
+-        unique_lock<std::mutex> lock(mMutexGBA);
++        std::unique_lock<std::mutex> lock(mMutexGBA);
+         return mbFinishedGBA;
+     }   
+ 
+@@ -143,7 +143,7 @@ protected:
+     bool mbFixScale;
+ 
+ 
+-    bool mnFullBAIdx;
++    int mnFullBAIdx;
+ };
+ 
+ } //namespace ORB_SLAM
+diff --git a/include/Map.h b/include/Map.h
+index a75339f..5be6cf8 100644
+--- a/include/Map.h
++++ b/include/Map.h
+@@ -59,7 +59,7 @@ public:
+ 
+     void clear();
+ 
+-    vector<KeyFrame*> mvpKeyFrameOrigins;
++    std::vector<KeyFrame*> mvpKeyFrameOrigins;
+ 
+     std::mutex mMutexMapUpdate;
+ 
+diff --git a/include/MapDrawer.h b/include/MapDrawer.h
+index 83b2826..2a1e79a 100644
+--- a/include/MapDrawer.h
++++ b/include/MapDrawer.h
+@@ -34,7 +34,7 @@ namespace ORB_SLAM2
+ class MapDrawer
+ {
+ public:
+-    MapDrawer(Map* pMap, const string &strSettingPath);
++    MapDrawer(Map* pMap, const std::string &strSettingPath);
+ 
+     Map* mpMap;
+ 
+diff --git a/include/ORBVocabulary.h b/include/ORBVocabulary.h
+index ca5fa8d..e54b02d 100644
+--- a/include/ORBVocabulary.h
++++ b/include/ORBVocabulary.h
+@@ -22,8 +22,8 @@
+ #ifndef ORBVOCABULARY_H
+ #define ORBVOCABULARY_H
+ 
+-#include"Thirdparty/DBoW2/DBoW2/FORB.h"
+-#include"Thirdparty/DBoW2/DBoW2/TemplatedVocabulary.h"
++#include<DBoW2/FORB.h>
++#include<DBoW2/TemplatedVocabulary.h>
+ 
+ namespace ORB_SLAM2
+ {
+diff --git a/include/ORBextractor.h b/include/ORBextractor.h
+index 66e8e7a..268148a 100644
+--- a/include/ORBextractor.h
++++ b/include/ORBextractor.h
+@@ -23,7 +23,7 @@
+ 
+ #include <vector>
+ #include <list>
+-#include <opencv/cv.h>
++#include <opencv2/opencv.hpp>
+ 
+ 
+ namespace ORB_SLAM2
+diff --git a/include/ORBmatcher.h b/include/ORBmatcher.h
+index ad881ee..9b15f1b 100644
+--- a/include/ORBmatcher.h
++++ b/include/ORBmatcher.h
+@@ -70,17 +70,17 @@ public:
+ 
+     // Matching to triangulate new MapPoints. Check Epipolar Constraint.
+     int SearchForTriangulation(KeyFrame *pKF1, KeyFrame* pKF2, cv::Mat F12,
+-                               std::vector<pair<size_t, size_t> > &vMatchedPairs, const bool bOnlyStereo);
++                               std::vector<std::pair<size_t, size_t> > &vMatchedPairs, const bool bOnlyStereo);
+ 
+     // Search matches between MapPoints seen in KF1 and KF2 transforming by a Sim3 [s12*R12|t12]
+     // In the stereo and RGB-D case, s12=1
+     int SearchBySim3(KeyFrame* pKF1, KeyFrame* pKF2, std::vector<MapPoint *> &vpMatches12, const float &s12, const cv::Mat &R12, const cv::Mat &t12, const float th);
+ 
+     // Project MapPoints into KeyFrame and search for duplicated MapPoints.
+-    int Fuse(KeyFrame* pKF, const vector<MapPoint *> &vpMapPoints, const float th=3.0);
++    int Fuse(KeyFrame* pKF, const std::vector<MapPoint *> &vpMapPoints, const float th=3.0);
+ 
+     // Project MapPoints into KeyFrame using a given Sim3 and search for duplicated MapPoints.
+-    int Fuse(KeyFrame* pKF, cv::Mat Scw, const std::vector<MapPoint*> &vpPoints, float th, vector<MapPoint *> &vpReplacePoint);
++    int Fuse(KeyFrame* pKF, cv::Mat Scw, const std::vector<MapPoint*> &vpPoints, float th, std::vector<MapPoint *> &vpReplacePoint);
+ 
+ public:
+ 
+diff --git a/include/Optimizer.h b/include/Optimizer.h
+index 2c4378e..dd066a0 100644
+--- a/include/Optimizer.h
++++ b/include/Optimizer.h
+@@ -27,7 +27,7 @@
+ #include "LoopClosing.h"
+ #include "Frame.h"
+ 
+-#include "Thirdparty/g2o/g2o/types/types_seven_dof_expmap.h"
++#include <g2o/types/sim3/types_seven_dof_expmap.h>
+ 
+ namespace ORB_SLAM2
+ {
+@@ -49,7 +49,7 @@ public:
+     void static OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* pCurKF,
+                                        const LoopClosing::KeyFrameAndPose &NonCorrectedSim3,
+                                        const LoopClosing::KeyFrameAndPose &CorrectedSim3,
+-                                       const map<KeyFrame *, set<KeyFrame *> > &LoopConnections,
++                                       const std::map<KeyFrame *, std::set<KeyFrame *> > &LoopConnections,
+                                        const bool &bFixScale);
+ 
+     // if bFixScale is true, optimize SE3 (stereo,rgbd), Sim3 otherwise (mono)
+diff --git a/include/PnPsolver.h b/include/PnPsolver.h
+index f92544f..2b8249e 100644
+--- a/include/PnPsolver.h
++++ b/include/PnPsolver.h
+@@ -60,16 +60,16 @@ namespace ORB_SLAM2
+ 
+ class PnPsolver {
+  public:
+-  PnPsolver(const Frame &F, const vector<MapPoint*> &vpMapPointMatches);
++  PnPsolver(const Frame &F, const std::vector<MapPoint*> &vpMapPointMatches);
+ 
+   ~PnPsolver();
+ 
+   void SetRansacParameters(double probability = 0.99, int minInliers = 8 , int maxIterations = 300, int minSet = 4, float epsilon = 0.4,
+                            float th2 = 5.991);
+ 
+-  cv::Mat find(vector<bool> &vbInliers, int &nInliers);
++  cv::Mat find(std::vector<bool> &vbInliers, int &nInliers);
+ 
+-  cv::Mat iterate(int nIterations, bool &bNoMore, vector<bool> &vbInliers, int &nInliers);
++  cv::Mat iterate(int nIterations, bool &bNoMore, std::vector<bool> &vbInliers, int &nInliers);
+ 
+  private:
+ 
+@@ -93,16 +93,15 @@ class PnPsolver {
+ 
+   void choose_control_points(void);
+   void compute_barycentric_coordinates(void);
+-  void fill_M(CvMat * M, const int row, const double * alphas, const double u, const double v);
++  void fill_M(cv::Mat * M, const int row, const double * alphas, const double u, const double v);
+   void compute_ccs(const double * betas, const double * ut);
+   void compute_pcs(void);
+ 
+   void solve_for_sign(void);
+ 
+-  void find_betas_approx_1(const CvMat * L_6x10, const CvMat * Rho, double * betas);
+-  void find_betas_approx_2(const CvMat * L_6x10, const CvMat * Rho, double * betas);
+-  void find_betas_approx_3(const CvMat * L_6x10, const CvMat * Rho, double * betas);
+-  void qr_solve(CvMat * A, CvMat * b, CvMat * X);
++  void find_betas_approx_1(const cv::Mat * L_6x10, const cv::Mat * Rho, double * betas);
++  void find_betas_approx_2(const cv::Mat * L_6x10, const cv::Mat * Rho, double * betas);
++  void find_betas_approx_3(const cv::Mat * L_6x10, const cv::Mat * Rho, double * betas);
+ 
+   double dot(const double * v1, const double * v2);
+   double dist2(const double * p1, const double * p2);
+@@ -110,9 +109,9 @@ class PnPsolver {
+   void compute_rho(double * rho);
+   void compute_L_6x10(const double * ut, double * l_6x10);
+ 
+-  void gauss_newton(const CvMat * L_6x10, const CvMat * Rho, double current_betas[4]);
+-  void compute_A_and_b_gauss_newton(const double * l_6x10, const double * rho,
+-				    double cb[4], CvMat * A, CvMat * b);
++  void gauss_newton(const cv::Mat * L_6x10, const cv::Mat * Rho, double current_betas[4]);
++  void compute_A_and_b_gauss_newton(const cv::Mat * l_6x10, const cv::Mat * rho,
++				    double cb[4], cv::Mat * A, cv::Mat * b);
+ 
+   double compute_R_and_t(const double * ut, const double * betas,
+ 			 double R[3][3], double t[3]);
+@@ -134,41 +133,41 @@ class PnPsolver {
+   double cws[4][3], ccs[4][3];
+   double cws_determinant;
+ 
+-  vector<MapPoint*> mvpMapPointMatches;
++  std::vector<MapPoint*> mvpMapPointMatches;
+ 
+   // 2D Points
+-  vector<cv::Point2f> mvP2D;
+-  vector<float> mvSigma2;
++  std::vector<cv::Point2f> mvP2D;
++  std::vector<float> mvSigma2;
+ 
+   // 3D Points
+-  vector<cv::Point3f> mvP3Dw;
++  std::vector<cv::Point3f> mvP3Dw;
+ 
+   // Index in Frame
+-  vector<size_t> mvKeyPointIndices;
++  std::vector<size_t> mvKeyPointIndices;
+ 
+   // Current Estimation
+   double mRi[3][3];
+   double mti[3];
+   cv::Mat mTcwi;
+-  vector<bool> mvbInliersi;
++  std::vector<bool> mvbInliersi;
+   int mnInliersi;
+ 
+   // Current Ransac State
+   int mnIterations;
+-  vector<bool> mvbBestInliers;
++  std::vector<bool> mvbBestInliers;
+   int mnBestInliers;
+   cv::Mat mBestTcw;
+ 
+   // Refined
+   cv::Mat mRefinedTcw;
+-  vector<bool> mvbRefinedInliers;
++  std::vector<bool> mvbRefinedInliers;
+   int mnRefinedInliers;
+ 
+   // Number of Correspondences
+   int N;
+ 
+   // Indices for random selection [0 .. N-1]
+-  vector<size_t> mvAllIndices;
++  std::vector<size_t> mvAllIndices;
+ 
+   // RANSAC probability
+   double mRansacProb;
+@@ -189,7 +188,7 @@ class PnPsolver {
+   int mRansacMinSet;
+ 
+   // Max square error associated with scale level. Max error = th*th*sigma(level)*sigma(level)
+-  vector<float> mvMaxError;
++  std::vector<float> mvMaxError;
+ 
+ };
+ 
+diff --git a/include/System.h b/include/System.h
+index b377b45..0e5fee4 100644
+--- a/include/System.h
++++ b/include/System.h
+@@ -59,7 +59,7 @@ public:
+ public:
+ 
+     // Initialize the SLAM system. It launches the Local Mapping, Loop Closing and Viewer threads.
+-    System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor, const bool bUseViewer = true);
++    System(const std::string &strVocFile, const std::string &strSettingsFile, const eSensor sensor, const bool bUseViewer = true);
+ 
+     // Proccess the given stereo frame. Images must be synchronized and rectified.
+     // Input images: RGB (CV_8UC3) or grayscale (CV_8U). RGB is converted to grayscale.
+@@ -98,23 +98,23 @@ public:
+     // Only for stereo and RGB-D. This method does not work for monocular.
+     // Call first Shutdown()
+     // See format details at: http://vision.in.tum.de/data/datasets/rgbd-dataset
+-    void SaveTrajectoryTUM(const string &filename);
++    void SaveTrajectoryTUM(const std::string &filename);
+ 
+     // Save keyframe poses in the TUM RGB-D dataset format.
+     // This method works for all sensor input.
+     // Call first Shutdown()
+     // See format details at: http://vision.in.tum.de/data/datasets/rgbd-dataset
+-    void SaveKeyFrameTrajectoryTUM(const string &filename);
++    void SaveKeyFrameTrajectoryTUM(const std::string &filename);
+ 
+     // Save camera trajectory in the KITTI dataset format.
+     // Only for stereo and RGB-D. This method does not work for monocular.
+     // Call first Shutdown()
+     // See format details at: http://www.cvlibs.net/datasets/kitti/eval_odometry.php
+-    void SaveTrajectoryKITTI(const string &filename);
++    void SaveTrajectoryKITTI(const std::string &filename);
+ 
+     // TODO: Save/Load functions
+-    // SaveMap(const string &filename);
+-    // LoadMap(const string &filename);
++    // SaveMap(const std::string &filename);
++    // LoadMap(const std::string &filename);
+ 
+     // Information from most recent processed frame
+     // You can call this right after TrackMonocular (or stereo or RGBD)
+diff --git a/include/Tracking.h b/include/Tracking.h
+index 5aaa93e..f02dc68 100644
+--- a/include/Tracking.h
++++ b/include/Tracking.h
+@@ -55,7 +55,7 @@ class Tracking
+ 
+ public:
+     Tracking(System* pSys, ORBVocabulary* pVoc, FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, Map* pMap,
+-             KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor);
++             KeyFrameDatabase* pKFDB, const std::string &strSettingPath, const int sensor);
+ 
+     // Preprocess the input and call Track(). Extract features and performs stereo matching.
+     cv::Mat GrabImageStereo(const cv::Mat &imRectLeft,const cv::Mat &imRectRight, const double &timestamp);
+@@ -69,7 +69,7 @@ public:
+     // Load new settings
+     // The focal lenght should be similar or scale prediction will fail when projecting points
+     // TODO: Modify MapPoint::PredictScale to take into account focal lenght
+-    void ChangeCalibration(const string &strSettingPath);
++    void ChangeCalibration(const std::string &strSettingPath);
+ 
+     // Use this function if you have deactivated local mapping and you only want to localize the camera.
+     void InformOnlyTracking(const bool &flag);
+@@ -105,10 +105,10 @@ public:
+ 
+     // Lists used to recover the full camera trajectory at the end of the execution.
+     // Basically we store the reference keyframe for each frame and its relative transformation
+-    list<cv::Mat> mlRelativeFramePoses;
+-    list<KeyFrame*> mlpReferences;
+-    list<double> mlFrameTimes;
+-    list<bool> mlbLost;
++    std::list<cv::Mat> mlRelativeFramePoses;
++    std::list<KeyFrame*> mlpReferences;
++    std::list<double> mlFrameTimes;
++    std::list<bool> mlbLost;
+ 
+     // True if local mapping is deactivated and we are performing only localization
+     bool mbOnlyTracking;
+@@ -213,7 +213,7 @@ protected:
+     //Color order (true RGB, false BGR, ignored if grayscale)
+     bool mbRGB;
+ 
+-    list<MapPoint*> mlpTemporalPoints;
++    std::list<MapPoint*> mlpTemporalPoints;
+ };
+ 
+ } //namespace ORB_SLAM
+diff --git a/include/Viewer.h b/include/Viewer.h
+index 251e223..8bca9d3 100644
+--- a/include/Viewer.h
++++ b/include/Viewer.h
+@@ -40,7 +40,7 @@ class System;
+ class Viewer
+ {
+ public:
+-    Viewer(System* pSystem, FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, Tracking *pTracking, const string &strSettingPath);
++    Viewer(System* pSystem, FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, Tracking *pTracking, const std::string &strSettingPath);
+ 
+     // Main thread function. Draw points, keyframes, the current camera pose and the last processed
+     // frame. Drawing is refreshed according to the camera fps. We use Pangolin.
+diff --git a/src/Frame.cc b/src/Frame.cc
+index 0e37d49..f27998c 100644
+--- a/src/Frame.cc
++++ b/src/Frame.cc
+@@ -23,6 +23,8 @@
+ #include "ORBmatcher.h"
+ #include <thread>
+ 
++using namespace std;
++
+ namespace ORB_SLAM2
+ {
+ 
+diff --git a/src/FrameDrawer.cc b/src/FrameDrawer.cc
+index e23b86c..ba88430 100644
+--- a/src/FrameDrawer.cc
++++ b/src/FrameDrawer.cc
+@@ -26,6 +26,8 @@
+ 
+ #include<mutex>
+ 
++using namespace std;
++
+ namespace ORB_SLAM2
+ {
+ 
+@@ -72,7 +74,7 @@ cv::Mat FrameDrawer::DrawFrame()
+     } // destroy scoped mutex -> release mutex
+ 
+     if(im.channels()<3) //this should be always true
+-        cvtColor(im,im,CV_GRAY2BGR);
++        cvtColor(im,im,cv::COLOR_GRAY2BGR);
+ 
+     //Draw
+     if(state==Tracking::NOT_INITIALIZED) //INITIALIZING
+diff --git a/src/Initializer.cc b/src/Initializer.cc
+index 6094b8f..691ec5b 100644
+--- a/src/Initializer.cc
++++ b/src/Initializer.cc
+@@ -20,13 +20,15 @@
+ 
+ #include "Initializer.h"
+ 
+-#include "Thirdparty/DBoW2/DUtils/Random.h"
++#include <DUtils/Random.h>
+ 
+ #include "Optimizer.h"
+ #include "ORBmatcher.h"
+ 
+ #include<thread>
+ 
++using namespace std;
++
+ namespace ORB_SLAM2
+ {
+ 
+diff --git a/src/KeyFrame.cc b/src/KeyFrame.cc
+index 4ef1e78..95bf24e 100644
+--- a/src/KeyFrame.cc
++++ b/src/KeyFrame.cc
+@@ -23,6 +23,8 @@
+ #include "ORBmatcher.h"
+ #include<mutex>
+ 
++using namespace std;
++
+ namespace ORB_SLAM2
+ {
+ 
+diff --git a/src/KeyFrameDatabase.cc b/src/KeyFrameDatabase.cc
+index 826860c..ac5e428 100644
+--- a/src/KeyFrameDatabase.cc
++++ b/src/KeyFrameDatabase.cc
+@@ -21,7 +21,7 @@
+ #include "KeyFrameDatabase.h"
+ 
+ #include "KeyFrame.h"
+-#include "Thirdparty/DBoW2/DBoW2/BowVector.h"
++#include <DBoW2/BowVector.h>
+ 
+ #include<mutex>
+ 
+diff --git a/src/LocalMapping.cc b/src/LocalMapping.cc
+index 6c87a6e..e579d19 100644
+--- a/src/LocalMapping.cc
++++ b/src/LocalMapping.cc
+@@ -24,7 +24,7 @@
+ #include "Optimizer.h"
+ 
+ #include<mutex>
+-
++#include<unistd.h> 
+ namespace ORB_SLAM2
+ {
+ 
+@@ -113,7 +113,7 @@ void LocalMapping::Run()
+ 
+ void LocalMapping::InsertKeyFrame(KeyFrame *pKF)
+ {
+-    unique_lock<mutex> lock(mMutexNewKFs);
++    std::unique_lock<std::mutex> lock(mMutexNewKFs);
+     mlNewKeyFrames.push_back(pKF);
+     mbAbortBA=true;
+ }
+@@ -121,14 +121,14 @@ void LocalMapping::InsertKeyFrame(KeyFrame *pKF)
+ 
+ bool LocalMapping::CheckNewKeyFrames()
+ {
+-    unique_lock<mutex> lock(mMutexNewKFs);
++    std::unique_lock<std::mutex> lock(mMutexNewKFs);
+     return(!mlNewKeyFrames.empty());
+ }
+ 
+ void LocalMapping::ProcessNewKeyFrame()
+ {
+     {
+-        unique_lock<mutex> lock(mMutexNewKFs);
++        std::unique_lock<std::mutex> lock(mMutexNewKFs);
+         mpCurrentKeyFrame = mlNewKeyFrames.front();
+         mlNewKeyFrames.pop_front();
+     }
+@@ -137,7 +137,7 @@ void LocalMapping::ProcessNewKeyFrame()
+     mpCurrentKeyFrame->ComputeBoW();
+ 
+     // Associate MapPoints to the new keyframe and update normal and descriptor
+-    const vector<MapPoint*> vpMapPointMatches = mpCurrentKeyFrame->GetMapPointMatches();
++    const std::vector<MapPoint*> vpMapPointMatches = mpCurrentKeyFrame->GetMapPointMatches();
+ 
+     for(size_t i=0; i<vpMapPointMatches.size(); i++)
+     {
+@@ -170,7 +170,7 @@ void LocalMapping::ProcessNewKeyFrame()
+ void LocalMapping::MapPointCulling()
+ {
+     // Check Recent Added MapPoints
+-    list<MapPoint*>::iterator lit = mlpRecentAddedMapPoints.begin();
++    std::list<MapPoint*>::iterator lit = mlpRecentAddedMapPoints.begin();
+     const unsigned long int nCurrentKFid = mpCurrentKeyFrame->mnId;
+ 
+     int nThObs;
+@@ -210,7 +210,7 @@ void LocalMapping::CreateNewMapPoints()
+     int nn = 10;
+     if(mbMonocular)
+         nn=20;
+-    const vector<KeyFrame*> vpNeighKFs = mpCurrentKeyFrame->GetBestCovisibilityKeyFrames(nn);
++    const std::vector<KeyFrame*> vpNeighKFs = mpCurrentKeyFrame->GetBestCovisibilityKeyFrames(nn);
+ 
+     ORBmatcher matcher(0.6,false);
+ 
+@@ -264,7 +264,7 @@ void LocalMapping::CreateNewMapPoints()
+         cv::Mat F12 = ComputeF12(mpCurrentKeyFrame,pKF2);
+ 
+         // Search matches that fullfil epipolar constraint
+-        vector<pair<size_t,size_t> > vMatchedIndices;
++        std::vector<std::pair<size_t,size_t> > vMatchedIndices;
+         matcher.SearchForTriangulation(mpCurrentKeyFrame,pKF2,F12,vMatchedIndices,false);
+ 
+         cv::Mat Rcw2 = pKF2->GetRotation();
+@@ -313,7 +313,7 @@ void LocalMapping::CreateNewMapPoints()
+             else if(bStereo2)
+                 cosParallaxStereo2 = cos(2*atan2(pKF2->mb/2,pKF2->mvDepth[idx2]));
+ 
+-            cosParallaxStereo = min(cosParallaxStereo1,cosParallaxStereo2);
++            cosParallaxStereo = std::min(cosParallaxStereo1,cosParallaxStereo2);
+ 
+             cv::Mat x3D;
+             if(cosParallaxRays<cosParallaxStereo && cosParallaxRays>0 && (bStereo1 || bStereo2 || cosParallaxRays<0.9998))
+@@ -457,9 +457,9 @@ void LocalMapping::SearchInNeighbors()
+     int nn = 10;
+     if(mbMonocular)
+         nn=20;
+-    const vector<KeyFrame*> vpNeighKFs = mpCurrentKeyFrame->GetBestCovisibilityKeyFrames(nn);
+-    vector<KeyFrame*> vpTargetKFs;
+-    for(vector<KeyFrame*>::const_iterator vit=vpNeighKFs.begin(), vend=vpNeighKFs.end(); vit!=vend; vit++)
++    const std::vector<KeyFrame*> vpNeighKFs = mpCurrentKeyFrame->GetBestCovisibilityKeyFrames(nn);
++    std::vector<KeyFrame*> vpTargetKFs;
++    for(std::vector<KeyFrame*>::const_iterator vit=vpNeighKFs.begin(), vend=vpNeighKFs.end(); vit!=vend; vit++)
+     {
+         KeyFrame* pKFi = *vit;
+         if(pKFi->isBad() || pKFi->mnFuseTargetForKF == mpCurrentKeyFrame->mnId)
+@@ -468,8 +468,8 @@ void LocalMapping::SearchInNeighbors()
+         pKFi->mnFuseTargetForKF = mpCurrentKeyFrame->mnId;
+ 
+         // Extend to some second neighbors
+-        const vector<KeyFrame*> vpSecondNeighKFs = pKFi->GetBestCovisibilityKeyFrames(5);
+-        for(vector<KeyFrame*>::const_iterator vit2=vpSecondNeighKFs.begin(), vend2=vpSecondNeighKFs.end(); vit2!=vend2; vit2++)
++        const std::vector<KeyFrame*> vpSecondNeighKFs = pKFi->GetBestCovisibilityKeyFrames(5);
++        for(std::vector<KeyFrame*>::const_iterator vit2=vpSecondNeighKFs.begin(), vend2=vpSecondNeighKFs.end(); vit2!=vend2; vit2++)
+         {
+             KeyFrame* pKFi2 = *vit2;
+             if(pKFi2->isBad() || pKFi2->mnFuseTargetForKF==mpCurrentKeyFrame->mnId || pKFi2->mnId==mpCurrentKeyFrame->mnId)
+@@ -481,8 +481,8 @@ void LocalMapping::SearchInNeighbors()
+ 
+     // Search matches by projection from current KF in target KFs
+     ORBmatcher matcher;
+-    vector<MapPoint*> vpMapPointMatches = mpCurrentKeyFrame->GetMapPointMatches();
+-    for(vector<KeyFrame*>::iterator vit=vpTargetKFs.begin(), vend=vpTargetKFs.end(); vit!=vend; vit++)
++    std::vector<MapPoint*> vpMapPointMatches = mpCurrentKeyFrame->GetMapPointMatches();
++    for(std::vector<KeyFrame*>::iterator vit=vpTargetKFs.begin(), vend=vpTargetKFs.end(); vit!=vend; vit++)
+     {
+         KeyFrame* pKFi = *vit;
+ 
+@@ -490,16 +490,16 @@ void LocalMapping::SearchInNeighbors()
+     }
+ 
+     // Search matches by projection from target KFs in current KF
+-    vector<MapPoint*> vpFuseCandidates;
++    std::vector<MapPoint*> vpFuseCandidates;
+     vpFuseCandidates.reserve(vpTargetKFs.size()*vpMapPointMatches.size());
+ 
+-    for(vector<KeyFrame*>::iterator vitKF=vpTargetKFs.begin(), vendKF=vpTargetKFs.end(); vitKF!=vendKF; vitKF++)
++    for(std::vector<KeyFrame*>::iterator vitKF=vpTargetKFs.begin(), vendKF=vpTargetKFs.end(); vitKF!=vendKF; vitKF++)
+     {
+         KeyFrame* pKFi = *vitKF;
+ 
+-        vector<MapPoint*> vpMapPointsKFi = pKFi->GetMapPointMatches();
++        std::vector<MapPoint*> vpMapPointsKFi = pKFi->GetMapPointMatches();
+ 
+-        for(vector<MapPoint*>::iterator vitMP=vpMapPointsKFi.begin(), vendMP=vpMapPointsKFi.end(); vitMP!=vendMP; vitMP++)
++        for(std::vector<MapPoint*>::iterator vitMP=vpMapPointsKFi.begin(), vendMP=vpMapPointsKFi.end(); vitMP!=vendMP; vitMP++)
+         {
+             MapPoint* pMP = *vitMP;
+             if(!pMP)
+@@ -554,19 +554,19 @@ cv::Mat LocalMapping::ComputeF12(KeyFrame *&pKF1, KeyFrame *&pKF2)
+ 
+ void LocalMapping::RequestStop()
+ {
+-    unique_lock<mutex> lock(mMutexStop);
++    std::unique_lock<std::mutex> lock(mMutexStop);
+     mbStopRequested = true;
+-    unique_lock<mutex> lock2(mMutexNewKFs);
++    std::unique_lock<std::mutex> lock2(mMutexNewKFs);
+     mbAbortBA = true;
+ }
+ 
+ bool LocalMapping::Stop()
+ {
+-    unique_lock<mutex> lock(mMutexStop);
++    std::unique_lock<std::mutex> lock(mMutexStop);
+     if(mbStopRequested && !mbNotStop)
+     {
+         mbStopped = true;
+-        cout << "Local Mapping STOP" << endl;
++	std::cout << "Local Mapping STOP" << std::endl;
+         return true;
+     }
+ 
+@@ -575,46 +575,46 @@ bool LocalMapping::Stop()
+ 
+ bool LocalMapping::isStopped()
+ {
+-    unique_lock<mutex> lock(mMutexStop);
++    std::unique_lock<std::mutex> lock(mMutexStop);
+     return mbStopped;
+ }
+ 
+ bool LocalMapping::stopRequested()
+ {
+-    unique_lock<mutex> lock(mMutexStop);
++    std::unique_lock<std::mutex> lock(mMutexStop);
+     return mbStopRequested;
+ }
+ 
+ void LocalMapping::Release()
+ {
+-    unique_lock<mutex> lock(mMutexStop);
+-    unique_lock<mutex> lock2(mMutexFinish);
++    std::unique_lock<std::mutex> lock(mMutexStop);
++    std::unique_lock<std::mutex> lock2(mMutexFinish);
+     if(mbFinished)
+         return;
+     mbStopped = false;
+     mbStopRequested = false;
+-    for(list<KeyFrame*>::iterator lit = mlNewKeyFrames.begin(), lend=mlNewKeyFrames.end(); lit!=lend; lit++)
++    for(std::list<KeyFrame*>::iterator lit = mlNewKeyFrames.begin(), lend=mlNewKeyFrames.end(); lit!=lend; lit++)
+         delete *lit;
+     mlNewKeyFrames.clear();
+ 
+-    cout << "Local Mapping RELEASE" << endl;
++    std::cout << "Local Mapping RELEASE" << std::endl;
+ }
+ 
+ bool LocalMapping::AcceptKeyFrames()
+ {
+-    unique_lock<mutex> lock(mMutexAccept);
++    std::unique_lock<std::mutex> lock(mMutexAccept);
+     return mbAcceptKeyFrames;
+ }
+ 
+ void LocalMapping::SetAcceptKeyFrames(bool flag)
+ {
+-    unique_lock<mutex> lock(mMutexAccept);
++    std::unique_lock<std::mutex> lock(mMutexAccept);
+     mbAcceptKeyFrames=flag;
+ }
+ 
+ bool LocalMapping::SetNotStop(bool flag)
+ {
+-    unique_lock<mutex> lock(mMutexStop);
++    std::unique_lock<std::mutex> lock(mMutexStop);
+ 
+     if(flag && mbStopped)
+         return false;
+@@ -635,14 +635,14 @@ void LocalMapping::KeyFrameCulling()
+     // A keyframe is considered redundant if the 90% of the MapPoints it sees, are seen
+     // in at least other 3 keyframes (in the same or finer scale)
+     // We only consider close stereo points
+-    vector<KeyFrame*> vpLocalKeyFrames = mpCurrentKeyFrame->GetVectorCovisibleKeyFrames();
++    std::vector<KeyFrame*> vpLocalKeyFrames = mpCurrentKeyFrame->GetVectorCovisibleKeyFrames();
+ 
+-    for(vector<KeyFrame*>::iterator vit=vpLocalKeyFrames.begin(), vend=vpLocalKeyFrames.end(); vit!=vend; vit++)
++    for(std::vector<KeyFrame*>::iterator vit=vpLocalKeyFrames.begin(), vend=vpLocalKeyFrames.end(); vit!=vend; vit++)
+     {
+         KeyFrame* pKF = *vit;
+         if(pKF->mnId==0)
+             continue;
+-        const vector<MapPoint*> vpMapPoints = pKF->GetMapPointMatches();
++        const std::vector<MapPoint*> vpMapPoints = pKF->GetMapPointMatches();
+ 
+         int nObs = 3;
+         const int thObs=nObs;
+@@ -665,9 +665,9 @@ void LocalMapping::KeyFrameCulling()
+                     if(pMP->Observations()>thObs)
+                     {
+                         const int &scaleLevel = pKF->mvKeysUn[i].octave;
+-                        const map<KeyFrame*, size_t> observations = pMP->GetObservations();
++                        const std::map<KeyFrame*, size_t> observations = pMP->GetObservations();
+                         int nObs=0;
+-                        for(map<KeyFrame*, size_t>::const_iterator mit=observations.begin(), mend=observations.end(); mit!=mend; mit++)
++                        for(std::map<KeyFrame*, size_t>::const_iterator mit=observations.begin(), mend=observations.end(); mit!=mend; mit++)
+                         {
+                             KeyFrame* pKFi = mit->first;
+                             if(pKFi==pKF)
+@@ -705,14 +705,14 @@ cv::Mat LocalMapping::SkewSymmetricMatrix(const cv::Mat &v)
+ void LocalMapping::RequestReset()
+ {
+     {
+-        unique_lock<mutex> lock(mMutexReset);
++        std::unique_lock<std::mutex> lock(mMutexReset);
+         mbResetRequested = true;
+     }
+ 
+     while(1)
+     {
+         {
+-            unique_lock<mutex> lock2(mMutexReset);
++            std::unique_lock<std::mutex> lock2(mMutexReset);
+             if(!mbResetRequested)
+                 break;
+         }
+@@ -722,7 +722,7 @@ void LocalMapping::RequestReset()
+ 
+ void LocalMapping::ResetIfRequested()
+ {
+-    unique_lock<mutex> lock(mMutexReset);
++    std::unique_lock<std::mutex> lock(mMutexReset);
+     if(mbResetRequested)
+     {
+         mlNewKeyFrames.clear();
+@@ -733,27 +733,27 @@ void LocalMapping::ResetIfRequested()
+ 
+ void LocalMapping::RequestFinish()
+ {
+-    unique_lock<mutex> lock(mMutexFinish);
++    std::unique_lock<std::mutex> lock(mMutexFinish);
+     mbFinishRequested = true;
+ }
+ 
+ bool LocalMapping::CheckFinish()
+ {
+-    unique_lock<mutex> lock(mMutexFinish);
++    std::unique_lock<std::mutex> lock(mMutexFinish);
+     return mbFinishRequested;
+ }
+ 
+ void LocalMapping::SetFinish()
+ {
+-    unique_lock<mutex> lock(mMutexFinish);
++    std::unique_lock<std::mutex> lock(mMutexFinish);
+     mbFinished = true;    
+-    unique_lock<mutex> lock2(mMutexStop);
++    std::unique_lock<std::mutex> lock2(mMutexStop);
+     mbStopped = true;
+ }
+ 
+ bool LocalMapping::isFinished()
+ {
+-    unique_lock<mutex> lock(mMutexFinish);
++    std::unique_lock<std::mutex> lock(mMutexFinish);
+     return mbFinished;
+ }
+ 
+diff --git a/src/LoopClosing.cc b/src/LoopClosing.cc
+index 5e317dd..ce8d2f1 100644
+--- a/src/LoopClosing.cc
++++ b/src/LoopClosing.cc
+@@ -30,7 +30,7 @@
+ 
+ #include<mutex>
+ #include<thread>
+-
++#include <unistd.h> 
+ 
+ namespace ORB_SLAM2
+ {
+@@ -89,28 +89,28 @@ void LoopClosing::Run()
+ 
+ void LoopClosing::InsertKeyFrame(KeyFrame *pKF)
+ {
+-    unique_lock<mutex> lock(mMutexLoopQueue);
++    std::unique_lock<std::mutex> lock(mMutexLoopQueue);
+     if(pKF->mnId!=0)
+         mlpLoopKeyFrameQueue.push_back(pKF);
+ }
+ 
+ bool LoopClosing::CheckNewKeyFrames()
+ {
+-    unique_lock<mutex> lock(mMutexLoopQueue);
++    std::unique_lock<std::mutex> lock(mMutexLoopQueue);
+     return(!mlpLoopKeyFrameQueue.empty());
+ }
+ 
+ bool LoopClosing::DetectLoop()
+ {
+     {
+-        unique_lock<mutex> lock(mMutexLoopQueue);
++        std::unique_lock<std::mutex> lock(mMutexLoopQueue);
+         mpCurrentKF = mlpLoopKeyFrameQueue.front();
+         mlpLoopKeyFrameQueue.pop_front();
+-        // Avoid that a keyframe can be erased while it is being process by this thread
++        // Avoid that a keyframe can be erased while it is being process by this std::thread
+         mpCurrentKF->SetNotErase();
+     }
+ 
+-    //If the map contains less than 10 KF or less than 10 KF have passed from last loop detection
++    //If the std::map contains less than 10 KF or less than 10 KF have passed from last loop detection
+     if(mpCurrentKF->mnId<mLastLoopKFid+10)
+     {
+         mpKeyFrameDB->add(mpCurrentKF);
+@@ -121,7 +121,7 @@ bool LoopClosing::DetectLoop()
+     // Compute reference BoW similarity score
+     // This is the lowest score to a connected keyframe in the covisibility graph
+     // We will impose loop candidates to have a higher similarity than this
+-    const vector<KeyFrame*> vpConnectedKeyFrames = mpCurrentKF->GetVectorCovisibleKeyFrames();
++    const std::vector<KeyFrame*> vpConnectedKeyFrames = mpCurrentKF->GetVectorCovisibleKeyFrames();
+     const DBoW2::BowVector &CurrentBowVec = mpCurrentKF->mBowVec;
+     float minScore = 1;
+     for(size_t i=0; i<vpConnectedKeyFrames.size(); i++)
+@@ -138,7 +138,7 @@ bool LoopClosing::DetectLoop()
+     }
+ 
+     // Query the database imposing the minimum score
+-    vector<KeyFrame*> vpCandidateKFs = mpKeyFrameDB->DetectLoopCandidates(mpCurrentKF, minScore);
++    std::vector<KeyFrame*> vpCandidateKFs = mpKeyFrameDB->DetectLoopCandidates(mpCurrentKF, minScore);
+ 
+     // If there are no loop candidates, just add new keyframe and return false
+     if(vpCandidateKFs.empty())
+@@ -155,23 +155,23 @@ bool LoopClosing::DetectLoop()
+     // We must detect a consistent loop in several consecutive keyframes to accept it
+     mvpEnoughConsistentCandidates.clear();
+ 
+-    vector<ConsistentGroup> vCurrentConsistentGroups;
+-    vector<bool> vbConsistentGroup(mvConsistentGroups.size(),false);
++    std::vector<ConsistentGroup> vCurrentConsistentGroups;
++    std::vector<bool> vbConsistentGroup(mvConsistentGroups.size(),false);
+     for(size_t i=0, iend=vpCandidateKFs.size(); i<iend; i++)
+     {
+         KeyFrame* pCandidateKF = vpCandidateKFs[i];
+ 
+-        set<KeyFrame*> spCandidateGroup = pCandidateKF->GetConnectedKeyFrames();
++        std::set<KeyFrame*> spCandidateGroup = pCandidateKF->GetConnectedKeyFrames();
+         spCandidateGroup.insert(pCandidateKF);
+ 
+         bool bEnoughConsistent = false;
+         bool bConsistentForSomeGroup = false;
+         for(size_t iG=0, iendG=mvConsistentGroups.size(); iG<iendG; iG++)
+         {
+-            set<KeyFrame*> sPreviousGroup = mvConsistentGroups[iG].first;
++            std::set<KeyFrame*> sPreviousGroup = mvConsistentGroups[iG].first;
+ 
+             bool bConsistent = false;
+-            for(set<KeyFrame*>::iterator sit=spCandidateGroup.begin(), send=spCandidateGroup.end(); sit!=send;sit++)
++            for(std::set<KeyFrame*>::iterator sit=spCandidateGroup.begin(), send=spCandidateGroup.end(); sit!=send;sit++)
+             {
+                 if(sPreviousGroup.count(*sit))
+                 {
+@@ -199,7 +199,7 @@ bool LoopClosing::DetectLoop()
+             }
+         }
+ 
+-        // If the group is not consistent with any previous group insert with consistency counter set to zero
++        // If the group is not consistent with any previous group insert with consistency counter std::set to zero
+         if(!bConsistentForSomeGroup)
+         {
+             ConsistentGroup cg = make_pair(spCandidateGroup,0);
+@@ -235,16 +235,16 @@ bool LoopClosing::ComputeSim3()
+     const int nInitialCandidates = mvpEnoughConsistentCandidates.size();
+ 
+     // We compute first ORB matches for each candidate
+-    // If enough matches are found, we setup a Sim3Solver
++    // If enough matches are found, we std::setup a Sim3Solver
+     ORBmatcher matcher(0.75,true);
+ 
+-    vector<Sim3Solver*> vpSim3Solvers;
++    std::vector<Sim3Solver*> vpSim3Solvers;
+     vpSim3Solvers.resize(nInitialCandidates);
+ 
+-    vector<vector<MapPoint*> > vvpMapPointMatches;
++    std::vector<std::vector<MapPoint*> > vvpMapPointMatches;
+     vvpMapPointMatches.resize(nInitialCandidates);
+ 
+-    vector<bool> vbDiscarded;
++    std::vector<bool> vbDiscarded;
+     vbDiscarded.resize(nInitialCandidates);
+ 
+     int nCandidates=0; //candidates with enough matches
+@@ -253,7 +253,7 @@ bool LoopClosing::ComputeSim3()
+     {
+         KeyFrame* pKF = mvpEnoughConsistentCandidates[i];
+ 
+-        // avoid that local mapping erase it while it is being processed in this thread
++        // avoid that local std::mapping erase it while it is being processed in this std::thread
+         pKF->SetNotErase();
+ 
+         if(pKF->isBad())
+@@ -293,7 +293,7 @@ bool LoopClosing::ComputeSim3()
+             KeyFrame* pKF = mvpEnoughConsistentCandidates[i];
+ 
+             // Perform 5 Ransac Iterations
+-            vector<bool> vbInliers;
++            std::vector<bool> vbInliers;
+             int nInliers;
+             bool bNoMore;
+ 
+@@ -310,7 +310,7 @@ bool LoopClosing::ComputeSim3()
+             // If RANSAC returns a Sim3, perform a guided matching and optimize with all correspondences
+             if(!Scm.empty())
+             {
+-                vector<MapPoint*> vpMapPointMatches(vvpMapPointMatches[i].size(), static_cast<MapPoint*>(NULL));
++                std::vector<MapPoint*> vpMapPointMatches(vvpMapPointMatches[i].size(), static_cast<MapPoint*>(NULL));
+                 for(size_t j=0, jend=vbInliers.size(); j<jend; j++)
+                 {
+                     if(vbInliers[j])
+@@ -350,13 +350,13 @@ bool LoopClosing::ComputeSim3()
+     }
+ 
+     // Retrieve MapPoints seen in Loop Keyframe and neighbors
+-    vector<KeyFrame*> vpLoopConnectedKFs = mpMatchedKF->GetVectorCovisibleKeyFrames();
++    std::vector<KeyFrame*> vpLoopConnectedKFs = mpMatchedKF->GetVectorCovisibleKeyFrames();
+     vpLoopConnectedKFs.push_back(mpMatchedKF);
+     mvpLoopMapPoints.clear();
+-    for(vector<KeyFrame*>::iterator vit=vpLoopConnectedKFs.begin(); vit!=vpLoopConnectedKFs.end(); vit++)
++    for(std::vector<KeyFrame*>::iterator vit=vpLoopConnectedKFs.begin(); vit!=vpLoopConnectedKFs.end(); vit++)
+     {
+         KeyFrame* pKF = *vit;
+-        vector<MapPoint*> vpMapPoints = pKF->GetMapPointMatches();
++        std::vector<MapPoint*> vpMapPoints = pKF->GetMapPointMatches();
+         for(size_t i=0, iend=vpMapPoints.size(); i<iend; i++)
+         {
+             MapPoint* pMP = vpMapPoints[i];
+@@ -401,7 +401,7 @@ bool LoopClosing::ComputeSim3()
+ 
+ void LoopClosing::CorrectLoop()
+ {
+-    cout << "Loop detected!" << endl;
++    std::cout << "Loop detected!" << std::endl;
+ 
+     // Send a stop signal to Local Mapping
+     // Avoid new keyframes are inserted while correcting the loop
+@@ -410,7 +410,7 @@ void LoopClosing::CorrectLoop()
+     // If a Global Bundle Adjustment is running, abort it
+     if(isRunningGBA())
+     {
+-        unique_lock<mutex> lock(mMutexGBA);
++        std::unique_lock<std::mutex> lock(mMutexGBA);
+         mbStopGBA = true;
+ 
+         mnFullBAIdx++;
+@@ -442,9 +442,9 @@ void LoopClosing::CorrectLoop()
+ 
+     {
+         // Get Map Mutex
+-        unique_lock<mutex> lock(mpMap->mMutexMapUpdate);
++        std::unique_lock<std::mutex> lock(mpMap->mMutexMapUpdate);
+ 
+-        for(vector<KeyFrame*>::iterator vit=mvpCurrentConnectedKFs.begin(), vend=mvpCurrentConnectedKFs.end(); vit!=vend; vit++)
++        for(std::vector<KeyFrame*>::iterator vit=mvpCurrentConnectedKFs.begin(), vend=mvpCurrentConnectedKFs.end(); vit!=vend; vit++)
+         {
+             KeyFrame* pKFi = *vit;
+ 
+@@ -477,7 +477,7 @@ void LoopClosing::CorrectLoop()
+ 
+             g2o::Sim3 g2oSiw =NonCorrectedSim3[pKFi];
+ 
+-            vector<MapPoint*> vpMPsi = pKFi->GetMapPointMatches();
++            std::vector<MapPoint*> vpMPsi = pKFi->GetMapPointMatches();
+             for(size_t iMP=0, endMPi = vpMPsi.size(); iMP<endMPi; iMP++)
+             {
+                 MapPoint* pMPi = vpMPsi[iMP];
+@@ -516,7 +516,7 @@ void LoopClosing::CorrectLoop()
+         }
+ 
+         // Start Loop Fusion
+-        // Update matched map points and replace if duplicated
++        // Update matched std::map points and replace if duplicated
+         for(size_t i=0; i<mvpCurrentMatchedPoints.size(); i++)
+         {
+             if(mvpCurrentMatchedPoints[i])
+@@ -543,21 +543,21 @@ void LoopClosing::CorrectLoop()
+ 
+ 
+     // After the MapPoint fusion, new links in the covisibility graph will appear attaching both sides of the loop
+-    map<KeyFrame*, set<KeyFrame*> > LoopConnections;
++    std::map<KeyFrame*, std::set<KeyFrame*> > LoopConnections;
+ 
+-    for(vector<KeyFrame*>::iterator vit=mvpCurrentConnectedKFs.begin(), vend=mvpCurrentConnectedKFs.end(); vit!=vend; vit++)
++    for(std::vector<KeyFrame*>::iterator vit=mvpCurrentConnectedKFs.begin(), vend=mvpCurrentConnectedKFs.end(); vit!=vend; vit++)
+     {
+         KeyFrame* pKFi = *vit;
+-        vector<KeyFrame*> vpPreviousNeighbors = pKFi->GetVectorCovisibleKeyFrames();
++        std::vector<KeyFrame*> vpPreviousNeighbors = pKFi->GetVectorCovisibleKeyFrames();
+ 
+         // Update connections. Detect new links.
+         pKFi->UpdateConnections();
+         LoopConnections[pKFi]=pKFi->GetConnectedKeyFrames();
+-        for(vector<KeyFrame*>::iterator vit_prev=vpPreviousNeighbors.begin(), vend_prev=vpPreviousNeighbors.end(); vit_prev!=vend_prev; vit_prev++)
++        for(std::vector<KeyFrame*>::iterator vit_prev=vpPreviousNeighbors.begin(), vend_prev=vpPreviousNeighbors.end(); vit_prev!=vend_prev; vit_prev++)
+         {
+             LoopConnections[pKFi].erase(*vit_prev);
+         }
+-        for(vector<KeyFrame*>::iterator vit2=mvpCurrentConnectedKFs.begin(), vend2=mvpCurrentConnectedKFs.end(); vit2!=vend2; vit2++)
++        for(std::vector<KeyFrame*>::iterator vit2=mvpCurrentConnectedKFs.begin(), vend2=mvpCurrentConnectedKFs.end(); vit2!=vend2; vit2++)
+         {
+             LoopConnections[pKFi].erase(*vit2);
+         }
+@@ -572,11 +572,11 @@ void LoopClosing::CorrectLoop()
+     mpMatchedKF->AddLoopEdge(mpCurrentKF);
+     mpCurrentKF->AddLoopEdge(mpMatchedKF);
+ 
+-    // Launch a new thread to perform Global Bundle Adjustment
++    // Launch a new std::thread to perform Global Bundle Adjustment
+     mbRunningGBA = true;
+     mbFinishedGBA = false;
+     mbStopGBA = false;
+-    mpThreadGBA = new thread(&LoopClosing::RunGlobalBundleAdjustment,this,mpCurrentKF->mnId);
++    mpThreadGBA = new std::thread(&LoopClosing::RunGlobalBundleAdjustment,this,mpCurrentKF->mnId);
+ 
+     // Loop closed. Release Local Mapping.
+     mpLocalMapper->Release();    
+@@ -595,11 +595,11 @@ void LoopClosing::SearchAndFuse(const KeyFrameAndPose &CorrectedPosesMap)
+         g2o::Sim3 g2oScw = mit->second;
+         cv::Mat cvScw = Converter::toCvMat(g2oScw);
+ 
+-        vector<MapPoint*> vpReplacePoints(mvpLoopMapPoints.size(),static_cast<MapPoint*>(NULL));
++        std::vector<MapPoint*> vpReplacePoints(mvpLoopMapPoints.size(),static_cast<MapPoint*>(NULL));
+         matcher.Fuse(pKF,cvScw,mvpLoopMapPoints,4,vpReplacePoints);
+ 
+         // Get Map Mutex
+-        unique_lock<mutex> lock(mpMap->mMutexMapUpdate);
++        std::unique_lock<std::mutex> lock(mpMap->mMutexMapUpdate);
+         const int nLP = mvpLoopMapPoints.size();
+         for(int i=0; i<nLP;i++)
+         {
+@@ -616,14 +616,14 @@ void LoopClosing::SearchAndFuse(const KeyFrameAndPose &CorrectedPosesMap)
+ void LoopClosing::RequestReset()
+ {
+     {
+-        unique_lock<mutex> lock(mMutexReset);
++        std::unique_lock<std::mutex> lock(mMutexReset);
+         mbResetRequested = true;
+     }
+ 
+     while(1)
+     {
+         {
+-        unique_lock<mutex> lock2(mMutexReset);
++        std::unique_lock<std::mutex> lock2(mMutexReset);
+         if(!mbResetRequested)
+             break;
+         }
+@@ -633,7 +633,7 @@ void LoopClosing::RequestReset()
+ 
+ void LoopClosing::ResetIfRequested()
+ {
+-    unique_lock<mutex> lock(mMutexReset);
++    std::unique_lock<std::mutex> lock(mMutexReset);
+     if(mbResetRequested)
+     {
+         mlpLoopKeyFrameQueue.clear();
+@@ -644,24 +644,24 @@ void LoopClosing::ResetIfRequested()
+ 
+ void LoopClosing::RunGlobalBundleAdjustment(unsigned long nLoopKF)
+ {
+-    cout << "Starting Global Bundle Adjustment" << endl;
++    std::cout << "Starting Global Bundle Adjustment" << std::endl;
+ 
+     int idx =  mnFullBAIdx;
+     Optimizer::GlobalBundleAdjustemnt(mpMap,10,&mbStopGBA,nLoopKF,false);
+ 
+     // Update all MapPoints and KeyFrames
+     // Local Mapping was active during BA, that means that there might be new keyframes
+-    // not included in the Global BA and they are not consistent with the updated map.
++    // not included in the Global BA and they are not consistent with the updated std::map.
+     // We need to propagate the correction through the spanning tree
+     {
+-        unique_lock<mutex> lock(mMutexGBA);
++        std::unique_lock<std::mutex> lock(mMutexGBA);
+         if(idx!=mnFullBAIdx)
+             return;
+ 
+         if(!mbStopGBA)
+         {
+-            cout << "Global Bundle Adjustment finished" << endl;
+-            cout << "Updating map ..." << endl;
++            std::cout << "Global Bundle Adjustment finished" << std::endl;
++            std::cout << "Updating std::map ..." << std::endl;
+             mpLocalMapper->RequestStop();
+             // Wait until Local Mapping has effectively stopped
+ 
+@@ -671,17 +671,17 @@ void LoopClosing::RunGlobalBundleAdjustment(unsigned long nLoopKF)
+             }
+ 
+             // Get Map Mutex
+-            unique_lock<mutex> lock(mpMap->mMutexMapUpdate);
++            std::unique_lock<std::mutex> lock(mpMap->mMutexMapUpdate);
+ 
+-            // Correct keyframes starting at map first keyframe
+-            list<KeyFrame*> lpKFtoCheck(mpMap->mvpKeyFrameOrigins.begin(),mpMap->mvpKeyFrameOrigins.end());
++            // Correct keyframes starting at std::map first keyframe
++            std::list<KeyFrame*> lpKFtoCheck(mpMap->mvpKeyFrameOrigins.begin(),mpMap->mvpKeyFrameOrigins.end());
+ 
+             while(!lpKFtoCheck.empty())
+             {
+                 KeyFrame* pKF = lpKFtoCheck.front();
+-                const set<KeyFrame*> sChilds = pKF->GetChilds();
++                const std::set<KeyFrame*> sChilds = pKF->GetChilds();
+                 cv::Mat Twc = pKF->GetPoseInverse();
+-                for(set<KeyFrame*>::const_iterator sit=sChilds.begin();sit!=sChilds.end();sit++)
++                for(std::set<KeyFrame*>::const_iterator sit=sChilds.begin();sit!=sChilds.end();sit++)
+                 {
+                     KeyFrame* pChild = *sit;
+                     if(pChild->mnBAGlobalForKF!=nLoopKF)
+@@ -700,7 +700,7 @@ void LoopClosing::RunGlobalBundleAdjustment(unsigned long nLoopKF)
+             }
+ 
+             // Correct MapPoints
+-            const vector<MapPoint*> vpMPs = mpMap->GetAllMapPoints();
++            const std::vector<MapPoint*> vpMPs = mpMap->GetAllMapPoints();
+ 
+             for(size_t i=0; i<vpMPs.size(); i++)
+             {
+@@ -740,7 +740,7 @@ void LoopClosing::RunGlobalBundleAdjustment(unsigned long nLoopKF)
+ 
+             mpLocalMapper->Release();
+ 
+-            cout << "Map updated!" << endl;
++            std::cout << "Map updated!" << std::endl;
+         }
+ 
+         mbFinishedGBA = true;
+@@ -750,25 +750,25 @@ void LoopClosing::RunGlobalBundleAdjustment(unsigned long nLoopKF)
+ 
+ void LoopClosing::RequestFinish()
+ {
+-    unique_lock<mutex> lock(mMutexFinish);
++    std::unique_lock<std::mutex> lock(mMutexFinish);
+     mbFinishRequested = true;
+ }
+ 
+ bool LoopClosing::CheckFinish()
+ {
+-    unique_lock<mutex> lock(mMutexFinish);
++    std::unique_lock<std::mutex> lock(mMutexFinish);
+     return mbFinishRequested;
+ }
+ 
+ void LoopClosing::SetFinish()
+ {
+-    unique_lock<mutex> lock(mMutexFinish);
++    std::unique_lock<std::mutex> lock(mMutexFinish);
+     mbFinished = true;
+ }
+ 
+ bool LoopClosing::isFinished()
+ {
+-    unique_lock<mutex> lock(mMutexFinish);
++    std::unique_lock<std::mutex> lock(mMutexFinish);
+     return mbFinished;
+ }
+ 
+diff --git a/src/Map.cc b/src/Map.cc
+index 15fcd86..49791ca 100644
+--- a/src/Map.cc
++++ b/src/Map.cc
+@@ -22,6 +22,8 @@
+ 
+ #include<mutex>
+ 
++using namespace std;
++
+ namespace ORB_SLAM2
+ {
+ 
+diff --git a/src/MapDrawer.cc b/src/MapDrawer.cc
+index 4d9990b..fe67281 100644
+--- a/src/MapDrawer.cc
++++ b/src/MapDrawer.cc
+@@ -24,6 +24,8 @@
+ #include <pangolin/pangolin.h>
+ #include <mutex>
+ 
++using namespace std;
++
+ namespace ORB_SLAM2
+ {
+ 
+diff --git a/src/MapPoint.cc b/src/MapPoint.cc
+index 3b29211..4703d1a 100644
+--- a/src/MapPoint.cc
++++ b/src/MapPoint.cc
+@@ -22,6 +22,7 @@
+ #include "ORBmatcher.h"
+ 
+ #include<mutex>
++using namespace std;
+ 
+ namespace ORB_SLAM2
+ {
+diff --git a/src/ORBmatcher.cc b/src/ORBmatcher.cc
+index 56bf279..afe21b5 100644
+--- a/src/ORBmatcher.cc
++++ b/src/ORBmatcher.cc
+@@ -25,7 +25,7 @@
+ #include<opencv2/core/core.hpp>
+ #include<opencv2/features2d/features2d.hpp>
+ 
+-#include "Thirdparty/DBoW2/DBoW2/FeatureVector.h"
++#include <DBoW2/FeatureVector.h>
+ 
+ #include<stdint-gcc.h>
+ 
+diff --git a/src/Optimizer.cc b/src/Optimizer.cc
+index 83d9264..e5a6182 100644
+--- a/src/Optimizer.cc
++++ b/src/Optimizer.cc
+@@ -20,13 +20,13 @@
+ 
+ #include "Optimizer.h"
+ 
+-#include "Thirdparty/g2o/g2o/core/block_solver.h"
+-#include "Thirdparty/g2o/g2o/core/optimization_algorithm_levenberg.h"
+-#include "Thirdparty/g2o/g2o/solvers/linear_solver_eigen.h"
+-#include "Thirdparty/g2o/g2o/types/types_six_dof_expmap.h"
+-#include "Thirdparty/g2o/g2o/core/robust_kernel_impl.h"
+-#include "Thirdparty/g2o/g2o/solvers/linear_solver_dense.h"
+-#include "Thirdparty/g2o/g2o/types/types_seven_dof_expmap.h"
++#include <g2o/core/block_solver.h>
++#include <g2o/core/optimization_algorithm_levenberg.h>
++#include <g2o/solvers/eigen/linear_solver_eigen.h>
++#include <g2o/types/sba/types_six_dof_expmap.h>
++#include <g2o/core/robust_kernel_impl.h>
++#include <g2o/solvers/dense/linear_solver_dense.h>
++#include <g2o/types/sim3/types_seven_dof_expmap.h>
+ 
+ #include<Eigen/StdVector>
+ 
+@@ -34,6 +34,8 @@
+ 
+ #include<mutex>
+ 
++using namespace std;
++
+ namespace ORB_SLAM2
+ {
+ 
+@@ -53,13 +55,13 @@ void Optimizer::BundleAdjustment(const vector<KeyFrame *> &vpKFs, const vector<M
+     vbNotIncludedMP.resize(vpMP.size());
+ 
+     g2o::SparseOptimizer optimizer;
+-    g2o::BlockSolver_6_3::LinearSolverType * linearSolver;
++    unique_ptr<g2o::BlockSolver_6_3::LinearSolverType> linearSolver;
+ 
+-    linearSolver = new g2o::LinearSolverEigen<g2o::BlockSolver_6_3::PoseMatrixType>();
++    linearSolver = make_unique<g2o::LinearSolverEigen<g2o::BlockSolver_6_3::PoseMatrixType>>();
+ 
+-    g2o::BlockSolver_6_3 * solver_ptr = new g2o::BlockSolver_6_3(linearSolver);
++    unique_ptr<g2o::BlockSolver_6_3> solver_ptr = make_unique<g2o::BlockSolver_6_3>(move(linearSolver));
+ 
+-    g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
++    g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(move(solver_ptr));
+     optimizer.setAlgorithm(solver);
+ 
+     if(pbStopFlag)
+@@ -91,7 +93,7 @@ void Optimizer::BundleAdjustment(const vector<KeyFrame *> &vpKFs, const vector<M
+         MapPoint* pMP = vpMP[i];
+         if(pMP->isBad())
+             continue;
+-        g2o::VertexSBAPointXYZ* vPoint = new g2o::VertexSBAPointXYZ();
++        g2o::VertexPointXYZ* vPoint = new g2o::VertexPointXYZ();
+         vPoint->setEstimate(Converter::toVector3d(pMP->GetWorldPos()));
+         const int id = pMP->mnId+maxKFid+1;
+         vPoint->setId(id);
+@@ -219,7 +221,7 @@ void Optimizer::BundleAdjustment(const vector<KeyFrame *> &vpKFs, const vector<M
+ 
+         if(pMP->isBad())
+             continue;
+-        g2o::VertexSBAPointXYZ* vPoint = static_cast<g2o::VertexSBAPointXYZ*>(optimizer.vertex(pMP->mnId+maxKFid+1));
++        g2o::VertexPointXYZ* vPoint = static_cast<g2o::VertexPointXYZ*>(optimizer.vertex(pMP->mnId+maxKFid+1));
+ 
+         if(nLoopKF==0)
+         {
+@@ -239,13 +241,13 @@ void Optimizer::BundleAdjustment(const vector<KeyFrame *> &vpKFs, const vector<M
+ int Optimizer::PoseOptimization(Frame *pFrame)
+ {
+     g2o::SparseOptimizer optimizer;
+-    g2o::BlockSolver_6_3::LinearSolverType * linearSolver;
++    unique_ptr<g2o::BlockSolver_6_3::LinearSolverType> linearSolver;
+ 
+-    linearSolver = new g2o::LinearSolverDense<g2o::BlockSolver_6_3::PoseMatrixType>();
++    linearSolver = make_unique<g2o::LinearSolverDense<g2o::BlockSolver_6_3::PoseMatrixType>>();
+ 
+-    g2o::BlockSolver_6_3 * solver_ptr = new g2o::BlockSolver_6_3(linearSolver);
++    unique_ptr<g2o::BlockSolver_6_3> solver_ptr = make_unique<g2o::BlockSolver_6_3>(move(linearSolver));
+ 
+-    g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
++    g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(move(solver_ptr));
+     optimizer.setAlgorithm(solver);
+ 
+     int nInitialCorrespondences=0;
+@@ -505,13 +507,13 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool* pbStopFlag, Map* pMap
+ 
+     // Setup optimizer
+     g2o::SparseOptimizer optimizer;
+-    g2o::BlockSolver_6_3::LinearSolverType * linearSolver;
++    unique_ptr<g2o::BlockSolver_6_3::LinearSolverType> linearSolver;
+ 
+-    linearSolver = new g2o::LinearSolverEigen<g2o::BlockSolver_6_3::PoseMatrixType>();
++    linearSolver = make_unique<g2o::LinearSolverEigen<g2o::BlockSolver_6_3::PoseMatrixType>>();
+ 
+-    g2o::BlockSolver_6_3 * solver_ptr = new g2o::BlockSolver_6_3(linearSolver);
++    unique_ptr<g2o::BlockSolver_6_3> solver_ptr = make_unique<g2o::BlockSolver_6_3>(move(linearSolver));
+ 
+-    g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
++    g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(move(solver_ptr));
+     optimizer.setAlgorithm(solver);
+ 
+     if(pbStopFlag)
+@@ -572,7 +574,7 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool* pbStopFlag, Map* pMap
+     for(list<MapPoint*>::iterator lit=lLocalMapPoints.begin(), lend=lLocalMapPoints.end(); lit!=lend; lit++)
+     {
+         MapPoint* pMP = *lit;
+-        g2o::VertexSBAPointXYZ* vPoint = new g2o::VertexSBAPointXYZ();
++        g2o::VertexPointXYZ* vPoint = new g2o::VertexPointXYZ();
+         vPoint->setEstimate(Converter::toVector3d(pMP->GetWorldPos()));
+         int id = pMP->mnId+maxKFid+1;
+         vPoint->setId(id);
+@@ -771,7 +773,7 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool* pbStopFlag, Map* pMap
+     for(list<MapPoint*>::iterator lit=lLocalMapPoints.begin(), lend=lLocalMapPoints.end(); lit!=lend; lit++)
+     {
+         MapPoint* pMP = *lit;
+-        g2o::VertexSBAPointXYZ* vPoint = static_cast<g2o::VertexSBAPointXYZ*>(optimizer.vertex(pMP->mnId+maxKFid+1));
++        g2o::VertexPointXYZ* vPoint = static_cast<g2o::VertexPointXYZ*>(optimizer.vertex(pMP->mnId+maxKFid+1));
+         pMP->SetWorldPos(Converter::toCvMat(vPoint->estimate()));
+         pMP->UpdateNormalAndDepth();
+     }
+@@ -786,10 +788,10 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
+     // Setup optimizer
+     g2o::SparseOptimizer optimizer;
+     optimizer.setVerbose(false);
+-    g2o::BlockSolver_7_3::LinearSolverType * linearSolver =
+-           new g2o::LinearSolverEigen<g2o::BlockSolver_7_3::PoseMatrixType>();
+-    g2o::BlockSolver_7_3 * solver_ptr= new g2o::BlockSolver_7_3(linearSolver);
+-    g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
++    unique_ptr<g2o::BlockSolver_7_3::LinearSolverType> linearSolver =
++           make_unique<g2o::LinearSolverEigen<g2o::BlockSolver_7_3::PoseMatrixType>>();
++    unique_ptr<g2o::BlockSolver_7_3> solver_ptr= make_unique<g2o::BlockSolver_7_3>(move(linearSolver));
++    g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(move(solver_ptr));
+ 
+     solver->setUserLambdaInit(1e-16);
+     optimizer.setAlgorithm(solver);
+@@ -1046,13 +1048,13 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
+ int Optimizer::OptimizeSim3(KeyFrame *pKF1, KeyFrame *pKF2, vector<MapPoint *> &vpMatches1, g2o::Sim3 &g2oS12, const float th2, const bool bFixScale)
+ {
+     g2o::SparseOptimizer optimizer;
+-    g2o::BlockSolverX::LinearSolverType * linearSolver;
++    unique_ptr<g2o::BlockSolverX::LinearSolverType> linearSolver;
+ 
+-    linearSolver = new g2o::LinearSolverDense<g2o::BlockSolverX::PoseMatrixType>();
++    linearSolver = make_unique<g2o::LinearSolverDense<g2o::BlockSolverX::PoseMatrixType>>();
+ 
+-    g2o::BlockSolverX * solver_ptr = new g2o::BlockSolverX(linearSolver);
++    unique_ptr<g2o::BlockSolverX> solver_ptr = make_unique<g2o::BlockSolverX>(move(linearSolver));
+ 
+-    g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
++    g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(move(solver_ptr));
+     optimizer.setAlgorithm(solver);
+ 
+     // Calibration
+@@ -1113,7 +1115,7 @@ int Optimizer::OptimizeSim3(KeyFrame *pKF1, KeyFrame *pKF2, vector<MapPoint *> &
+         {
+             if(!pMP1->isBad() && !pMP2->isBad() && i2>=0)
+             {
+-                g2o::VertexSBAPointXYZ* vPoint1 = new g2o::VertexSBAPointXYZ();
++                g2o::VertexPointXYZ* vPoint1 = new g2o::VertexPointXYZ();
+                 cv::Mat P3D1w = pMP1->GetWorldPos();
+                 cv::Mat P3D1c = R1w*P3D1w + t1w;
+                 vPoint1->setEstimate(Converter::toVector3d(P3D1c));
+@@ -1121,7 +1123,7 @@ int Optimizer::OptimizeSim3(KeyFrame *pKF1, KeyFrame *pKF2, vector<MapPoint *> &
+                 vPoint1->setFixed(true);
+                 optimizer.addVertex(vPoint1);
+ 
+-                g2o::VertexSBAPointXYZ* vPoint2 = new g2o::VertexSBAPointXYZ();
++                g2o::VertexPointXYZ* vPoint2 = new g2o::VertexPointXYZ();
+                 cv::Mat P3D2w = pMP2->GetWorldPos();
+                 cv::Mat P3D2c = R2w*P3D2w + t2w;
+                 vPoint2->setEstimate(Converter::toVector3d(P3D2c));
+diff --git a/src/PnPsolver.cc b/src/PnPsolver.cc
+index af3511b..306f730 100644
+--- a/src/PnPsolver.cc
++++ b/src/PnPsolver.cc
+@@ -55,7 +55,7 @@
+ #include <vector>
+ #include <cmath>
+ #include <opencv2/core/core.hpp>
+-#include "Thirdparty/DBoW2/DUtils/Random.h"
++#include <DUtils/Random.h>
+ #include <algorithm>
+ 
+ using namespace std;
+@@ -385,40 +385,41 @@ void PnPsolver::choose_control_points(void)
+ 
+ 
+   // Take C1, C2, and C3 from PCA on the reference points:
+-  CvMat * PW0 = cvCreateMat(number_of_correspondences, 3, CV_64F);
++  cv::Mat PW0(number_of_correspondences, 3, CV_64F);
+ 
+-  double pw0tpw0[3 * 3], dc[3], uct[3 * 3];
+-  CvMat PW0tPW0 = cvMat(3, 3, CV_64F, pw0tpw0);
+-  CvMat DC      = cvMat(3, 1, CV_64F, dc);
+-  CvMat UCt     = cvMat(3, 3, CV_64F, uct);
++  ///double pw0tpw0[3 * 3], dc[3], uct[3 * 3];
++  cv::Mat PW0tPW0;// = cv::Mat(3, 3, CV_64F, pw0tpw0);
++  cv::Mat DC;// = cv::Mat(3, 1, CV_64F, dc);
++  cv::Mat UCt;// = cv::Mat(3, 3, CV_64F, uct);
+ 
+   for(int i = 0; i < number_of_correspondences; i++)
+     for(int j = 0; j < 3; j++)
+-      PW0->data.db[3 * i + j] = pws[3 * i + j] - cws[0][j];
+-
+-  cvMulTransposed(PW0, &PW0tPW0, 1);
+-  cvSVD(&PW0tPW0, &DC, &UCt, 0, CV_SVD_MODIFY_A | CV_SVD_U_T);
+-
+-  cvReleaseMat(&PW0);
++      PW0.at<double>(j, i) = pws[3 * i + j] - cws[0][j];
+ 
++  cv::mulTransposed(PW0, PW0tPW0, 1);
++  cv::SVD svd = cv::SVD(PW0tPW0, cv::SVD::Flags::MODIFY_A);
++  DC = svd.w;
++  UCt = svd.u.t();
++  double* dc = DC.ptr<double>(0);
+   for(int i = 1; i < 4; i++) {
++    double* uct = DC.ptr<double>(i);
+     double k = sqrt(dc[i - 1] / number_of_correspondences);
+     for(int j = 0; j < 3; j++)
+-      cws[i][j] = cws[0][j] + k * uct[3 * (i - 1) + j];
++      cws[i][j] = cws[0][j] + k * uct[j];
+   }
+ }
+ 
+ void PnPsolver::compute_barycentric_coordinates(void)
+ {
+   double cc[3 * 3], cc_inv[3 * 3];
+-  CvMat CC     = cvMat(3, 3, CV_64F, cc);
+-  CvMat CC_inv = cvMat(3, 3, CV_64F, cc_inv);
++  cv::Mat CC     = cv::Mat(3, 3, CV_64F, cc);
++  cv::Mat CC_inv = cv::Mat(3, 3, CV_64F, cc_inv);
+ 
+   for(int i = 0; i < 3; i++)
+     for(int j = 1; j < 4; j++)
+       cc[3 * i + j - 1] = cws[j][i] - cws[0][i];
+ 
+-  cvInvert(&CC, &CC_inv, CV_SVD);
++  cv::invert(CC, CC_inv, cv::DECOMP_SVD);
+   double * ci = cc_inv;
+   for(int i = 0; i < number_of_correspondences; i++) {
+     double * pi = pws + 3 * i;
+@@ -433,20 +434,17 @@ void PnPsolver::compute_barycentric_coordinates(void)
+   }
+ }
+ 
+-void PnPsolver::fill_M(CvMat * M,
++void PnPsolver::fill_M(cv::Mat * M,
+ 		  const int row, const double * as, const double u, const double v)
+ {
+-  double * M1 = M->data.db + row * 12;
+-  double * M2 = M1 + 12;
+-
+   for(int i = 0; i < 4; i++) {
+-    M1[3 * i    ] = as[i] * fu;
+-    M1[3 * i + 1] = 0.0;
+-    M1[3 * i + 2] = as[i] * (uc - u);
++    M->at<double>(row * 12 + 3 * i    ) = as[i] * fu;
++    M->at<double>(row * 12 + 3 * i + 1) = 0.0;
++    M->at<double>(row * 12 + 3 * i + 2) = as[i] * (uc - u);
+ 
+-    M2[3 * i    ] = 0.0;
+-    M2[3 * i + 1] = as[i] * fv;
+-    M2[3 * i + 2] = as[i] * (vc - v);
++    M->at<double>(row * 12 + 12 + 3 * i    ) = 0.0;
++    M->at<double>(row * 12 + 12 + 3 * i + 1) = as[i] * fv;
++    M->at<double>(row * 12 + 12 + 3 * i + 2) = as[i] * (vc - v);
+   }
+ }
+ 
+@@ -479,23 +477,24 @@ double PnPsolver::compute_pose(double R[3][3], double t[3])
+   choose_control_points();
+   compute_barycentric_coordinates();
+ 
+-  CvMat * M = cvCreateMat(2 * number_of_correspondences, 12, CV_64F);
++  cv::Mat M = cv::Mat(2 * number_of_correspondences, 12, CV_64F);
+ 
+   for(int i = 0; i < number_of_correspondences; i++)
+-    fill_M(M, 2 * i, alphas + 4 * i, us[2 * i], us[2 * i + 1]);
++    fill_M(&M, 2 * i, alphas + 4 * i, us[2 * i], us[2 * i + 1]);
+ 
+   double mtm[12 * 12], d[12], ut[12 * 12];
+-  CvMat MtM = cvMat(12, 12, CV_64F, mtm);
+-  CvMat D   = cvMat(12,  1, CV_64F, d);
+-  CvMat Ut  = cvMat(12, 12, CV_64F, ut);
++  cv::Mat MtM = cv::Mat(12, 12, CV_64F, mtm);
++  cv::Mat D   = cv::Mat(12,  1, CV_64F, d);
++  cv::Mat Ut  = cv::Mat(12, 12, CV_64F, ut);
+ 
+-  cvMulTransposed(M, &MtM, 1);
+-  cvSVD(&MtM, &D, &Ut, 0, CV_SVD_MODIFY_A | CV_SVD_U_T);
+-  cvReleaseMat(&M);
++  cv::mulTransposed(M, MtM, 1);
++  cv::SVD svd = cv::SVD(MtM, cv::SVD::Flags::MODIFY_A);
++  D = svd.w;
++  Ut = svd.u.t();
+ 
+   double l_6x10[6 * 10], rho[6];
+-  CvMat L_6x10 = cvMat(6, 10, CV_64F, l_6x10);
+-  CvMat Rho    = cvMat(6,  1, CV_64F, rho);
++  cv::Mat L_6x10 = cv::Mat(6, 10, CV_64F, l_6x10);
++  cv::Mat Rho    = cv::Mat(6,  1, CV_64F, rho);
+ 
+   compute_L_6x10(ut, l_6x10);
+   compute_rho(rho);
+@@ -588,12 +587,13 @@ void PnPsolver::estimate_R_and_t(double R[3][3], double t[3])
+   }
+ 
+   double abt[3 * 3], abt_d[3], abt_u[3 * 3], abt_v[3 * 3];
+-  CvMat ABt   = cvMat(3, 3, CV_64F, abt);
+-  CvMat ABt_D = cvMat(3, 1, CV_64F, abt_d);
+-  CvMat ABt_U = cvMat(3, 3, CV_64F, abt_u);
+-  CvMat ABt_V = cvMat(3, 3, CV_64F, abt_v);
++  cv::Mat ABt   = cv::Mat(3, 3, CV_64F, abt);
++  cv::Mat ABt_D = cv::Mat(3, 1, CV_64F, abt_d);
++  cv::Mat ABt_U = cv::Mat(3, 3, CV_64F, abt_u);
++  cv::Mat ABt_V = cv::Mat(3, 3, CV_64F, abt_v);
++
++  ABt.setTo(0);
+ 
+-  cvSetZero(&ABt);
+   for(int i = 0; i < number_of_correspondences; i++) {
+     double * pc = pcs + 3 * i;
+     double * pw = pws + 3 * i;
+@@ -605,7 +605,10 @@ void PnPsolver::estimate_R_and_t(double R[3][3], double t[3])
+     }
+   }
+ 
+-  cvSVD(&ABt, &ABt_D, &ABt_U, &ABt_V, CV_SVD_MODIFY_A);
++  cv::SVD svd = cv::SVD(ABt, cv::SVD::Flags::MODIFY_A);
++  ABt_D = svd.w;
++  ABt_U = svd.u;
++  ABt_V = svd.vt.t();
+ 
+   for(int i = 0; i < 3; i++)
+     for(int j = 0; j < 3; j++)
+@@ -664,21 +667,21 @@ double PnPsolver::compute_R_and_t(const double * ut, const double * betas,
+ // betas10        = [B11 B12 B22 B13 B23 B33 B14 B24 B34 B44]
+ // betas_approx_1 = [B11 B12     B13         B14]
+ 
+-void PnPsolver::find_betas_approx_1(const CvMat * L_6x10, const CvMat * Rho,
++void PnPsolver::find_betas_approx_1(const cv::Mat * L_6x10, const cv::Mat * Rho,
+ 			       double * betas)
+ {
+   double l_6x4[6 * 4], b4[4];
+-  CvMat L_6x4 = cvMat(6, 4, CV_64F, l_6x4);
+-  CvMat B4    = cvMat(4, 1, CV_64F, b4);
++  cv::Mat L_6x4 = cv::Mat(6, 4, CV_64F, l_6x4);
++  cv::Mat B4    = cv::Mat(4, 1, CV_64F, b4);
+ 
+   for(int i = 0; i < 6; i++) {
+-    cvmSet(&L_6x4, i, 0, cvmGet(L_6x10, i, 0));
+-    cvmSet(&L_6x4, i, 1, cvmGet(L_6x10, i, 1));
+-    cvmSet(&L_6x4, i, 2, cvmGet(L_6x10, i, 3));
+-    cvmSet(&L_6x4, i, 3, cvmGet(L_6x10, i, 6));
++    L_6x4.at<double>(i, 0) = L_6x10->at<double>(i, 0);
++    L_6x4.at<double>(i, 1) = L_6x10->at<double>(i, 1);
++    L_6x4.at<double>(i, 2) = L_6x10->at<double>(i, 3);
++    L_6x4.at<double>(i, 3) = L_6x10->at<double>(i, 6);
+   }
+ 
+-  cvSolve(&L_6x4, Rho, &B4, CV_SVD);
++  cv::solve(L_6x4, *Rho, B4, cv::DECOMP_SVD);
+ 
+   if (b4[0] < 0) {
+     betas[0] = sqrt(-b4[0]);
+@@ -696,20 +699,20 @@ void PnPsolver::find_betas_approx_1(const CvMat * L_6x10, const CvMat * Rho,
+ // betas10        = [B11 B12 B22 B13 B23 B33 B14 B24 B34 B44]
+ // betas_approx_2 = [B11 B12 B22                            ]
+ 
+-void PnPsolver::find_betas_approx_2(const CvMat * L_6x10, const CvMat * Rho,
++void PnPsolver::find_betas_approx_2(const cv::Mat * L_6x10, const cv::Mat * Rho,
+ 			       double * betas)
+ {
+   double l_6x3[6 * 3], b3[3];
+-  CvMat L_6x3  = cvMat(6, 3, CV_64F, l_6x3);
+-  CvMat B3     = cvMat(3, 1, CV_64F, b3);
++  cv::Mat L_6x3  = cv::Mat(6, 3, CV_64F, l_6x3);
++  cv::Mat B3     = cv::Mat(3, 1, CV_64F, b3);
+ 
+   for(int i = 0; i < 6; i++) {
+-    cvmSet(&L_6x3, i, 0, cvmGet(L_6x10, i, 0));
+-    cvmSet(&L_6x3, i, 1, cvmGet(L_6x10, i, 1));
+-    cvmSet(&L_6x3, i, 2, cvmGet(L_6x10, i, 2));
++    L_6x3.at<double>(i, 0) = L_6x10->at<double>(i, 0);
++    L_6x3.at<double>(i, 1) = L_6x10->at<double>(i, 1);
++    L_6x3.at<double>(i, 2) = L_6x10->at<double>(i, 2);
+   }
+ 
+-  cvSolve(&L_6x3, Rho, &B3, CV_SVD);
++  cv::solve(L_6x3, *Rho, B3, cv::DECOMP_SVD);
+ 
+   if (b3[0] < 0) {
+     betas[0] = sqrt(-b3[0]);
+@@ -728,22 +731,22 @@ void PnPsolver::find_betas_approx_2(const CvMat * L_6x10, const CvMat * Rho,
+ // betas10        = [B11 B12 B22 B13 B23 B33 B14 B24 B34 B44]
+ // betas_approx_3 = [B11 B12 B22 B13 B23                    ]
+ 
+-void PnPsolver::find_betas_approx_3(const CvMat * L_6x10, const CvMat * Rho,
++void PnPsolver::find_betas_approx_3(const cv::Mat * L_6x10, const cv::Mat * Rho,
+ 			       double * betas)
+ {
+   double l_6x5[6 * 5], b5[5];
+-  CvMat L_6x5 = cvMat(6, 5, CV_64F, l_6x5);
+-  CvMat B5    = cvMat(5, 1, CV_64F, b5);
++  cv::Mat L_6x5 = cv::Mat(6, 5, CV_64F, l_6x5);
++  cv::Mat B5    = cv::Mat(5, 1, CV_64F, b5);
+ 
+   for(int i = 0; i < 6; i++) {
+-    cvmSet(&L_6x5, i, 0, cvmGet(L_6x10, i, 0));
+-    cvmSet(&L_6x5, i, 1, cvmGet(L_6x10, i, 1));
+-    cvmSet(&L_6x5, i, 2, cvmGet(L_6x10, i, 2));
+-    cvmSet(&L_6x5, i, 3, cvmGet(L_6x10, i, 3));
+-    cvmSet(&L_6x5, i, 4, cvmGet(L_6x10, i, 4));
++    L_6x5.at<double>(i, 0) = L_6x10->at<double>(i, 0);
++    L_6x5.at<double>(i, 1) = L_6x10->at<double>(i, 1);
++    L_6x5.at<double>(i, 2) = L_6x10->at<double>(i, 2);
++    L_6x5.at<double>(i, 3) = L_6x10->at<double>(i, 3);
++    L_6x5.at<double>(i, 4) = L_6x10->at<double>(i, 4);
+   }
+ 
+-  cvSolve(&L_6x5, Rho, &B5, CV_SVD);
++  cv::solve(L_6x5, *Rho, B5, cv::DECOMP_SVD);
+ 
+   if (b5[0] < 0) {
+     betas[0] = sqrt(-b5[0]);
+@@ -809,148 +812,53 @@ void PnPsolver::compute_rho(double * rho)
+   rho[5] = dist2(cws[2], cws[3]);
+ }
+ 
+-void PnPsolver::compute_A_and_b_gauss_newton(const double * l_6x10, const double * rho,
+-					double betas[4], CvMat * A, CvMat * b)
++void PnPsolver::compute_A_and_b_gauss_newton(const cv::Mat * L_6x10, const cv::Mat * rho,
++					double betas[4], cv::Mat * A, cv::Mat * b)
+ {
+   for(int i = 0; i < 6; i++) {
+-    const double * rowL = l_6x10 + i * 10;
+-    double * rowA = A->data.db + i * 4;
++    const double * rowL = L_6x10->ptr<double>(i);
++    double * rowA = A->ptr<double>(i);
+ 
+     rowA[0] = 2 * rowL[0] * betas[0] +     rowL[1] * betas[1] +     rowL[3] * betas[2] +     rowL[6] * betas[3];
+     rowA[1] =     rowL[1] * betas[0] + 2 * rowL[2] * betas[1] +     rowL[4] * betas[2] +     rowL[7] * betas[3];
+     rowA[2] =     rowL[3] * betas[0] +     rowL[4] * betas[1] + 2 * rowL[5] * betas[2] +     rowL[8] * betas[3];
+     rowA[3] =     rowL[6] * betas[0] +     rowL[7] * betas[1] +     rowL[8] * betas[2] + 2 * rowL[9] * betas[3];
+-
+-    cvmSet(b, i, 0, rho[i] -
+-	   (
+-	    rowL[0] * betas[0] * betas[0] +
+-	    rowL[1] * betas[0] * betas[1] +
+-	    rowL[2] * betas[1] * betas[1] +
+-	    rowL[3] * betas[0] * betas[2] +
+-	    rowL[4] * betas[1] * betas[2] +
+-	    rowL[5] * betas[2] * betas[2] +
+-	    rowL[6] * betas[0] * betas[3] +
+-	    rowL[7] * betas[1] * betas[3] +
+-	    rowL[8] * betas[2] * betas[3] +
+-	    rowL[9] * betas[3] * betas[3]
+-	    ));
++    b->at<double>(i, 0) =  rho->at<double>(i) -
++	(
++	rowL[0] * betas[0] * betas[0] +
++	rowL[1] * betas[0] * betas[1] +
++	rowL[2] * betas[1] * betas[1] +
++	rowL[3] * betas[0] * betas[2] +
++	rowL[4] * betas[1] * betas[2] +
++	rowL[5] * betas[2] * betas[2] +
++	rowL[6] * betas[0] * betas[3] +
++	rowL[7] * betas[1] * betas[3] +
++	rowL[8] * betas[2] * betas[3] +
++	rowL[9] * betas[3] * betas[3]
++	);
+   }
+ }
+ 
+-void PnPsolver::gauss_newton(const CvMat * L_6x10, const CvMat * Rho,
++void PnPsolver::gauss_newton(const cv::Mat * L_6x10, const cv::Mat * Rho,
+ 			double betas[4])
+ {
+   const int iterations_number = 5;
+ 
+   double a[6*4], b[6], x[4];
+-  CvMat A = cvMat(6, 4, CV_64F, a);
+-  CvMat B = cvMat(6, 1, CV_64F, b);
+-  CvMat X = cvMat(4, 1, CV_64F, x);
++  cv::Mat A = cv::Mat(6, 4, CV_64F, a);
++  cv::Mat B = cv::Mat(6, 1, CV_64F, b);
++  cv::Mat X = cv::Mat(4, 1, CV_64F, x);
+ 
+   for(int k = 0; k < iterations_number; k++) {
+-    compute_A_and_b_gauss_newton(L_6x10->data.db, Rho->data.db,
++    compute_A_and_b_gauss_newton(L_6x10, Rho,
+ 				 betas, &A, &B);
+-    qr_solve(&A, &B, &X);
++    cv::solve(A, B, X, cv::DECOMP_QR);
+ 
+     for(int i = 0; i < 4; i++)
+       betas[i] += x[i];
+   }
+ }
+ 
+-void PnPsolver::qr_solve(CvMat * A, CvMat * b, CvMat * X)
+-{
+-  static int max_nr = 0;
+-  static double * A1, * A2;
+-
+-  const int nr = A->rows;
+-  const int nc = A->cols;
+-
+-  if (max_nr != 0 && max_nr < nr) {
+-    delete [] A1;
+-    delete [] A2;
+-  }
+-  if (max_nr < nr) {
+-    max_nr = nr;
+-    A1 = new double[nr];
+-    A2 = new double[nr];
+-  }
+-
+-  double * pA = A->data.db, * ppAkk = pA;
+-  for(int k = 0; k < nc; k++) {
+-    double * ppAik = ppAkk, eta = fabs(*ppAik);
+-    for(int i = k + 1; i < nr; i++) {
+-      double elt = fabs(*ppAik);
+-      if (eta < elt) eta = elt;
+-      ppAik += nc;
+-    }
+-
+-    if (eta == 0) {
+-      A1[k] = A2[k] = 0.0;
+-      cerr << "God damnit, A is singular, this shouldn't happen." << endl;
+-      return;
+-    } else {
+-      double * ppAik = ppAkk, sum = 0.0, inv_eta = 1. / eta;
+-      for(int i = k; i < nr; i++) {
+-	*ppAik *= inv_eta;
+-	sum += *ppAik * *ppAik;
+-	ppAik += nc;
+-      }
+-      double sigma = sqrt(sum);
+-      if (*ppAkk < 0)
+-	sigma = -sigma;
+-      *ppAkk += sigma;
+-      A1[k] = sigma * *ppAkk;
+-      A2[k] = -eta * sigma;
+-      for(int j = k + 1; j < nc; j++) {
+-	double * ppAik = ppAkk, sum = 0;
+-	for(int i = k; i < nr; i++) {
+-	  sum += *ppAik * ppAik[j - k];
+-	  ppAik += nc;
+-	}
+-	double tau = sum / A1[k];
+-	ppAik = ppAkk;
+-	for(int i = k; i < nr; i++) {
+-	  ppAik[j - k] -= tau * *ppAik;
+-	  ppAik += nc;
+-	}
+-      }
+-    }
+-    ppAkk += nc + 1;
+-  }
+-
+-  // b <- Qt b
+-  double * ppAjj = pA, * pb = b->data.db;
+-  for(int j = 0; j < nc; j++) {
+-    double * ppAij = ppAjj, tau = 0;
+-    for(int i = j; i < nr; i++)	{
+-      tau += *ppAij * pb[i];
+-      ppAij += nc;
+-    }
+-    tau /= A1[j];
+-    ppAij = ppAjj;
+-    for(int i = j; i < nr; i++) {
+-      pb[i] -= tau * *ppAij;
+-      ppAij += nc;
+-    }
+-    ppAjj += nc + 1;
+-  }
+-
+-  // X = R-1 b
+-  double * pX = X->data.db;
+-  pX[nc - 1] = pb[nc - 1] / A2[nc - 1];
+-  for(int i = nc - 2; i >= 0; i--) {
+-    double * ppAij = pA + i * nc + (i + 1), sum = 0;
+-
+-    for(int j = i + 1; j < nc; j++) {
+-      sum += *ppAij * pX[j];
+-      ppAij++;
+-    }
+-    pX[i] = (pb[i] - sum) / A2[i];
+-  }
+-}
+-
+-
+-
+ void PnPsolver::relative_error(double & rot_err, double & transl_err,
+ 			  const double Rtrue[3][3], const double ttrue[3],
+ 			  const double Rest[3][3],  const double test[3])
+diff --git a/src/Sim3Solver.cc b/src/Sim3Solver.cc
+index 4ad44ff..c43ed17 100644
+--- a/src/Sim3Solver.cc
++++ b/src/Sim3Solver.cc
+@@ -28,7 +28,9 @@
+ #include "KeyFrame.h"
+ #include "ORBmatcher.h"
+ 
+-#include "Thirdparty/DBoW2/DUtils/Random.h"
++#include <DUtils/Random.h>
++
++using namespace std;
+ 
+ namespace ORB_SLAM2
+ {
+@@ -214,7 +216,7 @@ cv::Mat Sim3Solver::find(vector<bool> &vbInliers12, int &nInliers)
+ 
+ void Sim3Solver::ComputeCentroid(cv::Mat &P, cv::Mat &Pr, cv::Mat &C)
+ {
+-    cv::reduce(P,C,1,CV_REDUCE_SUM);
++    cv::reduce(P,C,1,cv::REDUCE_SUM);
+     C = C/P.cols;
+ 
+     for(int i=0; i<P.cols; i++)
+diff --git a/src/System.cc b/src/System.cc
+index 8df4157..778da5a 100644
+--- a/src/System.cc
++++ b/src/System.cc
+@@ -25,51 +25,53 @@
+ #include <thread>
+ #include <pangolin/pangolin.h>
+ #include <iomanip>
++#include <unistd.h> 
+ 
+ namespace ORB_SLAM2
+ {
+ 
+-System::System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor,
++System::System(const std::string &strVocFile, const std::string &strSettingsFile, const eSensor sensor,
+                const bool bUseViewer):mSensor(sensor), mpViewer(static_cast<Viewer*>(NULL)), mbReset(false),mbActivateLocalizationMode(false),
+         mbDeactivateLocalizationMode(false)
+ {
+     // Output welcome message
+-    cout << endl <<
+-    "ORB-SLAM2 Copyright (C) 2014-2016 Raul Mur-Artal, University of Zaragoza." << endl <<
+-    "This program comes with ABSOLUTELY NO WARRANTY;" << endl  <<
+-    "This is free software, and you are welcome to redistribute it" << endl <<
+-    "under certain conditions. See LICENSE.txt." << endl << endl;
++    std::cout << std::endl <<
++    "ORB-SLAM2 Copyright (C) 2014-2016 Raul Mur-Artal, University of Zaragoza." << std::endl <<
++    "This program comes with ABSOLUTELY NO WARRANTY;" << std::endl  <<
++    "This is free software, and you are welcome to redistribute it" << std::endl <<
++    "under certain conditions. See LICENSE.txt." << std::endl << std::endl;
+ 
+-    cout << "Input sensor was set to: ";
++    std::cout << "Input sensor was set to: ";
+ 
+     if(mSensor==MONOCULAR)
+-        cout << "Monocular" << endl;
++        std::cout << "Monocular" << std::endl;
+     else if(mSensor==STEREO)
+-        cout << "Stereo" << endl;
++        std::cout << "Stereo" << std::endl;
+     else if(mSensor==RGBD)
+-        cout << "RGB-D" << endl;
++        std::cout << "RGB-D" << std::endl;
+ 
+     //Check settings file
+     cv::FileStorage fsSettings(strSettingsFile.c_str(), cv::FileStorage::READ);
+     if(!fsSettings.isOpened())
+     {
+-       cerr << "Failed to open settings file at: " << strSettingsFile << endl;
++       std::cerr << "Failed to open settings file at: " << strSettingsFile << std::endl;
+        exit(-1);
+     }
+ 
+ 
+     //Load ORB Vocabulary
+-    cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
++    std::cout << std::endl << "Loading ORB Vocabulary. This could take a while..." << std::endl;
+ 
+     mpVocabulary = new ORBVocabulary();
+-    bool bVocLoad = mpVocabulary->loadFromTextFile(strVocFile);
++    mpVocabulary->load(strVocFile);
++    bool bVocLoad = true;
+     if(!bVocLoad)
+     {
+-        cerr << "Wrong path to vocabulary. " << endl;
+-        cerr << "Falied to open at: " << strVocFile << endl;
++        std::cerr << "Wrong path to vocabulary. " << std::endl;
++        std::cerr << "Falied to open at: " << strVocFile << std::endl;
+         exit(-1);
+     }
+-    cout << "Vocabulary loaded!" << endl << endl;
++    std::cout << "Vocabulary loaded!" << std::endl << std::endl;
+ 
+     //Create KeyFrame Database
+     mpKeyFrameDatabase = new KeyFrameDatabase(*mpVocabulary);
+@@ -81,28 +83,28 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
+     mpFrameDrawer = new FrameDrawer(mpMap);
+     mpMapDrawer = new MapDrawer(mpMap, strSettingsFile);
+ 
+-    //Initialize the Tracking thread
+-    //(it will live in the main thread of execution, the one that called this constructor)
++    //Initialize the Tracking std::thread
++    //(it will live in the main std::thread of execution, the one that called this constructor)
+     mpTracker = new Tracking(this, mpVocabulary, mpFrameDrawer, mpMapDrawer,
+                              mpMap, mpKeyFrameDatabase, strSettingsFile, mSensor);
+ 
+-    //Initialize the Local Mapping thread and launch
++    //Initialize the Local Mapping std::thread and launch
+     mpLocalMapper = new LocalMapping(mpMap, mSensor==MONOCULAR);
+-    mptLocalMapping = new thread(&ORB_SLAM2::LocalMapping::Run,mpLocalMapper);
++    mptLocalMapping = new std::thread(&ORB_SLAM2::LocalMapping::Run,mpLocalMapper);
+ 
+-    //Initialize the Loop Closing thread and launch
++    //Initialize the Loop Closing std::thread and launch
+     mpLoopCloser = new LoopClosing(mpMap, mpKeyFrameDatabase, mpVocabulary, mSensor!=MONOCULAR);
+-    mptLoopClosing = new thread(&ORB_SLAM2::LoopClosing::Run, mpLoopCloser);
++    mptLoopClosing = new std::thread(&ORB_SLAM2::LoopClosing::Run, mpLoopCloser);
+ 
+-    //Initialize the Viewer thread and launch
++    //Initialize the Viewer std::thread and launch
+     if(bUseViewer)
+     {
+         mpViewer = new Viewer(this, mpFrameDrawer,mpMapDrawer,mpTracker,strSettingsFile);
+-        mptViewer = new thread(&Viewer::Run, mpViewer);
++        mptViewer = new std::thread(&Viewer::Run, mpViewer);
+         mpTracker->SetViewer(mpViewer);
+     }
+ 
+-    //Set pointers between threads
++    //Set pointers between std::threads
+     mpTracker->SetLocalMapper(mpLocalMapper);
+     mpTracker->SetLoopClosing(mpLoopCloser);
+ 
+@@ -117,13 +119,13 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const
+ {
+     if(mSensor!=STEREO)
+     {
+-        cerr << "ERROR: you called TrackStereo but input sensor was not set to STEREO." << endl;
++        std::cerr << "ERROR: you called TrackStereo but input sensor was not set to STEREO." << std::endl;
+         exit(-1);
+     }   
+ 
+     // Check mode change
+     {
+-        unique_lock<mutex> lock(mMutexMode);
++        std::unique_lock<std::mutex> lock(mMutexMode);
+         if(mbActivateLocalizationMode)
+         {
+             mpLocalMapper->RequestStop();
+@@ -147,7 +149,7 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const
+ 
+     // Check reset
+     {
+-    unique_lock<mutex> lock(mMutexReset);
++    std::unique_lock<std::mutex> lock(mMutexReset);
+     if(mbReset)
+     {
+         mpTracker->Reset();
+@@ -157,7 +159,7 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const
+ 
+     cv::Mat Tcw = mpTracker->GrabImageStereo(imLeft,imRight,timestamp);
+ 
+-    unique_lock<mutex> lock2(mMutexState);
++    std::unique_lock<std::mutex> lock2(mMutexState);
+     mTrackingState = mpTracker->mState;
+     mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
+     mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
+@@ -168,13 +170,13 @@ cv::Mat System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const doub
+ {
+     if(mSensor!=RGBD)
+     {
+-        cerr << "ERROR: you called TrackRGBD but input sensor was not set to RGBD." << endl;
++        std::cerr << "ERROR: you called TrackRGBD but input sensor was not set to RGBD." << std::endl;
+         exit(-1);
+     }    
+ 
+     // Check mode change
+     {
+-        unique_lock<mutex> lock(mMutexMode);
++        std::unique_lock<std::mutex> lock(mMutexMode);
+         if(mbActivateLocalizationMode)
+         {
+             mpLocalMapper->RequestStop();
+@@ -198,7 +200,7 @@ cv::Mat System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const doub
+ 
+     // Check reset
+     {
+-    unique_lock<mutex> lock(mMutexReset);
++    std::unique_lock<std::mutex> lock(mMutexReset);
+     if(mbReset)
+     {
+         mpTracker->Reset();
+@@ -208,7 +210,7 @@ cv::Mat System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const doub
+ 
+     cv::Mat Tcw = mpTracker->GrabImageRGBD(im,depthmap,timestamp);
+ 
+-    unique_lock<mutex> lock2(mMutexState);
++    std::unique_lock<std::mutex> lock2(mMutexState);
+     mTrackingState = mpTracker->mState;
+     mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
+     mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
+@@ -219,13 +221,13 @@ cv::Mat System::TrackMonocular(const cv::Mat &im, const double &timestamp)
+ {
+     if(mSensor!=MONOCULAR)
+     {
+-        cerr << "ERROR: you called TrackMonocular but input sensor was not set to Monocular." << endl;
++        std::cerr << "ERROR: you called TrackMonocular but input sensor was not set to Monocular." << std::endl;
+         exit(-1);
+     }
+ 
+     // Check mode change
+     {
+-        unique_lock<mutex> lock(mMutexMode);
++        std::unique_lock<std::mutex> lock(mMutexMode);
+         if(mbActivateLocalizationMode)
+         {
+             mpLocalMapper->RequestStop();
+@@ -249,7 +251,7 @@ cv::Mat System::TrackMonocular(const cv::Mat &im, const double &timestamp)
+ 
+     // Check reset
+     {
+-    unique_lock<mutex> lock(mMutexReset);
++    std::unique_lock<std::mutex> lock(mMutexReset);
+     if(mbReset)
+     {
+         mpTracker->Reset();
+@@ -259,7 +261,7 @@ cv::Mat System::TrackMonocular(const cv::Mat &im, const double &timestamp)
+ 
+     cv::Mat Tcw = mpTracker->GrabImageMonocular(im,timestamp);
+ 
+-    unique_lock<mutex> lock2(mMutexState);
++    std::unique_lock<std::mutex> lock2(mMutexState);
+     mTrackingState = mpTracker->mState;
+     mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
+     mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
+@@ -269,13 +271,13 @@ cv::Mat System::TrackMonocular(const cv::Mat &im, const double &timestamp)
+ 
+ void System::ActivateLocalizationMode()
+ {
+-    unique_lock<mutex> lock(mMutexMode);
++    std::unique_lock<std::mutex> lock(mMutexMode);
+     mbActivateLocalizationMode = true;
+ }
+ 
+ void System::DeactivateLocalizationMode()
+ {
+-    unique_lock<mutex> lock(mMutexMode);
++    std::unique_lock<std::mutex> lock(mMutexMode);
+     mbDeactivateLocalizationMode = true;
+ }
+ 
+@@ -294,7 +296,7 @@ bool System::MapChanged()
+ 
+ void System::Reset()
+ {
+-    unique_lock<mutex> lock(mMutexReset);
++    std::unique_lock<std::mutex> lock(mMutexReset);
+     mbReset = true;
+ }
+ 
+@@ -309,7 +311,7 @@ void System::Shutdown()
+             usleep(5000);
+     }
+ 
+-    // Wait until all thread have effectively stopped
++    // Wait until all std::thread have effectively stopped
+     while(!mpLocalMapper->isFinished() || !mpLoopCloser->isFinished() || mpLoopCloser->isRunningGBA())
+     {
+         usleep(5000);
+@@ -319,25 +321,25 @@ void System::Shutdown()
+         pangolin::BindToContext("ORB-SLAM2: Map Viewer");
+ }
+ 
+-void System::SaveTrajectoryTUM(const string &filename)
++void System::SaveTrajectoryTUM(const std::string &filename)
+ {
+-    cout << endl << "Saving camera trajectory to " << filename << " ..." << endl;
++    std::cout << std::endl << "Saving camera trajectory to " << filename << " ..." << std::endl;
+     if(mSensor==MONOCULAR)
+     {
+-        cerr << "ERROR: SaveTrajectoryTUM cannot be used for monocular." << endl;
++        std::cerr << "ERROR: SaveTrajectoryTUM cannot be used for monocular." << std::endl;
+         return;
+     }
+ 
+-    vector<KeyFrame*> vpKFs = mpMap->GetAllKeyFrames();
++    std::vector<KeyFrame*> vpKFs = mpMap->GetAllKeyFrames();
+     sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
+ 
+     // Transform all keyframes so that the first keyframe is at the origin.
+     // After a loop closure the first keyframe might not be at the origin.
+     cv::Mat Two = vpKFs[0]->GetPoseInverse();
+ 
+-    ofstream f;
++    std::ofstream f;
+     f.open(filename.c_str());
+-    f << fixed;
++    f << std::fixed;
+ 
+     // Frame pose is stored relative to its reference keyframe (which is optimized by BA and pose graph).
+     // We need to get first the keyframe pose and then concatenate the relative transformation.
+@@ -345,10 +347,10 @@ void System::SaveTrajectoryTUM(const string &filename)
+ 
+     // For each frame we have a reference keyframe (lRit), the timestamp (lT) and a flag
+     // which is true when tracking failed (lbL).
+-    list<ORB_SLAM2::KeyFrame*>::iterator lRit = mpTracker->mlpReferences.begin();
+-    list<double>::iterator lT = mpTracker->mlFrameTimes.begin();
+-    list<bool>::iterator lbL = mpTracker->mlbLost.begin();
+-    for(list<cv::Mat>::iterator lit=mpTracker->mlRelativeFramePoses.begin(),
++    std::list<ORB_SLAM2::KeyFrame*>::iterator lRit = mpTracker->mlpReferences.begin();
++    std::list<double>::iterator lT = mpTracker->mlFrameTimes.begin();
++    std::list<bool>::iterator lbL = mpTracker->mlbLost.begin();
++    for(std::list<cv::Mat>::iterator lit=mpTracker->mlRelativeFramePoses.begin(),
+         lend=mpTracker->mlRelativeFramePoses.end();lit!=lend;lit++, lRit++, lT++, lbL++)
+     {
+         if(*lbL)
+@@ -371,29 +373,29 @@ void System::SaveTrajectoryTUM(const string &filename)
+         cv::Mat Rwc = Tcw.rowRange(0,3).colRange(0,3).t();
+         cv::Mat twc = -Rwc*Tcw.rowRange(0,3).col(3);
+ 
+-        vector<float> q = Converter::toQuaternion(Rwc);
++        std::vector<float> q = Converter::toQuaternion(Rwc);
+ 
+-        f << setprecision(6) << *lT << " " <<  setprecision(9) << twc.at<float>(0) << " " << twc.at<float>(1) << " " << twc.at<float>(2) << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << endl;
++        f << std::setprecision(6) << *lT << " " <<  std::setprecision(9) << twc.at<float>(0) << " " << twc.at<float>(1) << " " << twc.at<float>(2) << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << std::endl;
+     }
+     f.close();
+-    cout << endl << "trajectory saved!" << endl;
++    std::cout << std::endl << "trajectory saved!" << std::endl;
+ }
+ 
+ 
+-void System::SaveKeyFrameTrajectoryTUM(const string &filename)
++void System::SaveKeyFrameTrajectoryTUM(const std::string &filename)
+ {
+-    cout << endl << "Saving keyframe trajectory to " << filename << " ..." << endl;
++    std::cout << std::endl << "Saving keyframe trajectory to " << filename << " ..." << std::endl;
+ 
+-    vector<KeyFrame*> vpKFs = mpMap->GetAllKeyFrames();
++    std::vector<KeyFrame*> vpKFs = mpMap->GetAllKeyFrames();
+     sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
+ 
+     // Transform all keyframes so that the first keyframe is at the origin.
+     // After a loop closure the first keyframe might not be at the origin.
+     //cv::Mat Two = vpKFs[0]->GetPoseInverse();
+ 
+-    ofstream f;
++    std::ofstream f;
+     f.open(filename.c_str());
+-    f << fixed;
++    f << std::fixed;
+ 
+     for(size_t i=0; i<vpKFs.size(); i++)
+     {
+@@ -405,36 +407,36 @@ void System::SaveKeyFrameTrajectoryTUM(const string &filename)
+             continue;
+ 
+         cv::Mat R = pKF->GetRotation().t();
+-        vector<float> q = Converter::toQuaternion(R);
++        std::vector<float> q = Converter::toQuaternion(R);
+         cv::Mat t = pKF->GetCameraCenter();
+-        f << setprecision(6) << pKF->mTimeStamp << setprecision(7) << " " << t.at<float>(0) << " " << t.at<float>(1) << " " << t.at<float>(2)
+-          << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << endl;
++        f << std::setprecision(6) << pKF->mTimeStamp << std::setprecision(7) << " " << t.at<float>(0) << " " << t.at<float>(1) << " " << t.at<float>(2)
++          << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << std::endl;
+ 
+     }
+ 
+     f.close();
+-    cout << endl << "trajectory saved!" << endl;
++    std::cout << std::endl << "trajectory saved!" << std::endl;
+ }
+ 
+-void System::SaveTrajectoryKITTI(const string &filename)
++void System::SaveTrajectoryKITTI(const std::string &filename)
+ {
+-    cout << endl << "Saving camera trajectory to " << filename << " ..." << endl;
++    std::cout << std::endl << "Saving camera trajectory to " << filename << " ..." << std::endl;
+     if(mSensor==MONOCULAR)
+     {
+-        cerr << "ERROR: SaveTrajectoryKITTI cannot be used for monocular." << endl;
++        std::cerr << "ERROR: SaveTrajectoryKITTI cannot be used for monocular." << std::endl;
+         return;
+     }
+ 
+-    vector<KeyFrame*> vpKFs = mpMap->GetAllKeyFrames();
++    std::vector<KeyFrame*> vpKFs = mpMap->GetAllKeyFrames();
+     sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
+ 
+     // Transform all keyframes so that the first keyframe is at the origin.
+     // After a loop closure the first keyframe might not be at the origin.
+     cv::Mat Two = vpKFs[0]->GetPoseInverse();
+ 
+-    ofstream f;
++    std::ofstream f;
+     f.open(filename.c_str());
+-    f << fixed;
++    f << std::fixed;
+ 
+     // Frame pose is stored relative to its reference keyframe (which is optimized by BA and pose graph).
+     // We need to get first the keyframe pose and then concatenate the relative transformation.
+@@ -442,9 +444,9 @@ void System::SaveTrajectoryKITTI(const string &filename)
+ 
+     // For each frame we have a reference keyframe (lRit), the timestamp (lT) and a flag
+     // which is true when tracking failed (lbL).
+-    list<ORB_SLAM2::KeyFrame*>::iterator lRit = mpTracker->mlpReferences.begin();
+-    list<double>::iterator lT = mpTracker->mlFrameTimes.begin();
+-    for(list<cv::Mat>::iterator lit=mpTracker->mlRelativeFramePoses.begin(), lend=mpTracker->mlRelativeFramePoses.end();lit!=lend;lit++, lRit++, lT++)
++    std::list<ORB_SLAM2::KeyFrame*>::iterator lRit = mpTracker->mlpReferences.begin();
++    std::list<double>::iterator lT = mpTracker->mlFrameTimes.begin();
++    for(std::list<cv::Mat>::iterator lit=mpTracker->mlRelativeFramePoses.begin(), lend=mpTracker->mlRelativeFramePoses.end();lit!=lend;lit++, lRit++, lT++)
+     {
+         ORB_SLAM2::KeyFrame* pKF = *lRit;
+ 
+@@ -452,7 +454,7 @@ void System::SaveTrajectoryKITTI(const string &filename)
+ 
+         while(pKF->isBad())
+         {
+-          //  cout << "bad parent" << endl;
++          //  std::cout << "bad parent" << std::endl;
+             Trw = Trw*pKF->mTcp;
+             pKF = pKF->GetParent();
+         }
+@@ -463,29 +465,29 @@ void System::SaveTrajectoryKITTI(const string &filename)
+         cv::Mat Rwc = Tcw.rowRange(0,3).colRange(0,3).t();
+         cv::Mat twc = -Rwc*Tcw.rowRange(0,3).col(3);
+ 
+-        f << setprecision(9) << Rwc.at<float>(0,0) << " " << Rwc.at<float>(0,1)  << " " << Rwc.at<float>(0,2) << " "  << twc.at<float>(0) << " " <<
++        f << std::setprecision(9) << Rwc.at<float>(0,0) << " " << Rwc.at<float>(0,1)  << " " << Rwc.at<float>(0,2) << " "  << twc.at<float>(0) << " " <<
+              Rwc.at<float>(1,0) << " " << Rwc.at<float>(1,1)  << " " << Rwc.at<float>(1,2) << " "  << twc.at<float>(1) << " " <<
+-             Rwc.at<float>(2,0) << " " << Rwc.at<float>(2,1)  << " " << Rwc.at<float>(2,2) << " "  << twc.at<float>(2) << endl;
++             Rwc.at<float>(2,0) << " " << Rwc.at<float>(2,1)  << " " << Rwc.at<float>(2,2) << " "  << twc.at<float>(2) << std::endl;
+     }
+     f.close();
+-    cout << endl << "trajectory saved!" << endl;
++    std::cout << std::endl << "trajectory saved!" << std::endl;
+ }
+ 
+ int System::GetTrackingState()
+ {
+-    unique_lock<mutex> lock(mMutexState);
++    std::unique_lock<std::mutex> lock(mMutexState);
+     return mTrackingState;
+ }
+ 
+-vector<MapPoint*> System::GetTrackedMapPoints()
++std::vector<MapPoint*> System::GetTrackedMapPoints()
+ {
+-    unique_lock<mutex> lock(mMutexState);
++    std::unique_lock<std::mutex> lock(mMutexState);
+     return mTrackedMapPoints;
+ }
+ 
+-vector<cv::KeyPoint> System::GetTrackedKeyPointsUn()
++std::vector<cv::KeyPoint> System::GetTrackedKeyPointsUn()
+ {
+-    unique_lock<mutex> lock(mMutexState);
++    std::unique_lock<std::mutex> lock(mMutexState);
+     return mTrackedKeyPointsUn;
+ }
+ 
+diff --git a/src/Tracking.cc b/src/Tracking.cc
+index 2273b2c..6b9e111 100644
+--- a/src/Tracking.cc
++++ b/src/Tracking.cc
+@@ -34,6 +34,7 @@
+ #include"PnPsolver.h"
+ 
+ #include<iostream>
++#include <unistd.h> 
+ 
+ #include<mutex>
+ 
+@@ -173,26 +174,26 @@ cv::Mat Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat &imRe
+     {
+         if(mbRGB)
+         {
+-            cvtColor(mImGray,mImGray,CV_RGB2GRAY);
+-            cvtColor(imGrayRight,imGrayRight,CV_RGB2GRAY);
++            cvtColor(mImGray,mImGray,cv::COLOR_RGB2GRAY);
++            cvtColor(imGrayRight,imGrayRight,cv::COLOR_RGB2GRAY);
+         }
+         else
+         {
+-            cvtColor(mImGray,mImGray,CV_BGR2GRAY);
+-            cvtColor(imGrayRight,imGrayRight,CV_BGR2GRAY);
++            cvtColor(mImGray,mImGray,cv::COLOR_BGR2GRAY);
++            cvtColor(imGrayRight,imGrayRight,cv::COLOR_BGR2GRAY);
+         }
+     }
+     else if(mImGray.channels()==4)
+     {
+         if(mbRGB)
+         {
+-            cvtColor(mImGray,mImGray,CV_RGBA2GRAY);
+-            cvtColor(imGrayRight,imGrayRight,CV_RGBA2GRAY);
++            cvtColor(mImGray,mImGray,cv::COLOR_RGBA2GRAY);
++            cvtColor(imGrayRight,imGrayRight,cv::COLOR_RGBA2GRAY);
+         }
+         else
+         {
+-            cvtColor(mImGray,mImGray,CV_BGRA2GRAY);
+-            cvtColor(imGrayRight,imGrayRight,CV_BGRA2GRAY);
++            cvtColor(mImGray,mImGray,cv::COLOR_BGRA2GRAY);
++            cvtColor(imGrayRight,imGrayRight,cv::COLOR_BGRA2GRAY);
+         }
+     }
+ 
+@@ -212,16 +213,16 @@ cv::Mat Tracking::GrabImageRGBD(const cv::Mat &imRGB,const cv::Mat &imD, const d
+     if(mImGray.channels()==3)
+     {
+         if(mbRGB)
+-            cvtColor(mImGray,mImGray,CV_RGB2GRAY);
++            cvtColor(mImGray,mImGray,cv::COLOR_RGB2GRAY);
+         else
+-            cvtColor(mImGray,mImGray,CV_BGR2GRAY);
++            cvtColor(mImGray,mImGray,cv::COLOR_BGR2GRAY);
+     }
+     else if(mImGray.channels()==4)
+     {
+         if(mbRGB)
+-            cvtColor(mImGray,mImGray,CV_RGBA2GRAY);
++            cvtColor(mImGray,mImGray,cv::COLOR_RGBA2GRAY);
+         else
+-            cvtColor(mImGray,mImGray,CV_BGRA2GRAY);
++            cvtColor(mImGray,mImGray,cv::COLOR_BGRA2GRAY);
+     }
+ 
+     if((fabs(mDepthMapFactor-1.0f)>1e-5) || imDepth.type()!=CV_32F)
+@@ -242,16 +243,16 @@ cv::Mat Tracking::GrabImageMonocular(const cv::Mat &im, const double &timestamp)
+     if(mImGray.channels()==3)
+     {
+         if(mbRGB)
+-            cvtColor(mImGray,mImGray,CV_RGB2GRAY);
++            cvtColor(mImGray,mImGray,cv::COLOR_RGB2GRAY);
+         else
+-            cvtColor(mImGray,mImGray,CV_BGR2GRAY);
++            cvtColor(mImGray,mImGray,cv::COLOR_BGR2GRAY);
+     }
+     else if(mImGray.channels()==4)
+     {
+         if(mbRGB)
+-            cvtColor(mImGray,mImGray,CV_RGBA2GRAY);
++            cvtColor(mImGray,mImGray,cv::COLOR_RGBA2GRAY);
+         else
+-            cvtColor(mImGray,mImGray,CV_BGRA2GRAY);
++            cvtColor(mImGray,mImGray,cv::COLOR_BGRA2GRAY);
+     }
+ 
+     if(mState==NOT_INITIALIZED || mState==NO_IMAGES_YET)
+diff --git a/src/Viewer.cc b/src/Viewer.cc
+index dec3204..f024d41 100644
+--- a/src/Viewer.cc
++++ b/src/Viewer.cc
+@@ -22,6 +22,9 @@
+ #include <pangolin/pangolin.h>
+ 
+ #include <mutex>
++#include <unistd.h> 
++
++using namespace std;
+ 
+ namespace ORB_SLAM2
+ {

@@ -1,0 +1,33 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0f137ec..f6afae6 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,7 +1,7 @@
+ SET(PROJECT_NAME DSO)
+ 
+ PROJECT(${PROJECT_NAME})
+-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
++CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
+ #set(CMAKE_VERBOSE_MAKEFILE ON)
+ 
+ 
+@@ -13,7 +13,7 @@ set(LIBRARY_OUTPUT_PATH lib)
+ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+ 
+ # required libraries
+-find_package(SuiteParse REQUIRED)
++find_package(SuiteParse REQUIRED) # wrong name of the package, but the module also has this mistake
+ find_package(Eigen3 REQUIRED)
+ find_package(Boost COMPONENTS system thread) 
+ 
+@@ -59,8 +59,8 @@ set(dso_SOURCE_FILES
+ 
+ include_directories(
+   ${PROJECT_SOURCE_DIR}/src
+-  ${PROJECT_SOURCE_DIR}/thirdparty/Sophus
+-  ${PROJECT_SOURCE_DIR}/thirdparty/sse2neon
++  #${PROJECT_SOURCE_DIR}/thirdparty/Sophus
++  #${PROJECT_SOURCE_DIR}/thirdparty/sse2neon
+   ${EIGEN3_INCLUDE_DIR}
+ ) 
+ 

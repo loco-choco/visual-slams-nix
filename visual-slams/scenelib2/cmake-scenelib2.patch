@@ -1,0 +1,35 @@
+diff --git a/scenelib2/CMakeLists.txt b/scenelib2/CMakeLists.txt
+index 367512e..7042ee9 100644
+--- a/scenelib2/CMakeLists.txt
++++ b/scenelib2/CMakeLists.txt
+@@ -43,9 +43,27 @@ ADD_LIBRARY(${LIBRARY_NAME} SHARED ${SOURCES})
+ ############################################################
+ ## Export config file for easy inclusion into other projects: FIND_PACKAGE(SceneLib2)
+ CONFIGURE_FILE  (
+-                ${CMAKE_CURRENT_SOURCE_DIR}/SceneLib2Config.cmake.in
+-                ${CMAKE_CURRENT_BINARY_DIR}/SceneLib2Config.cmake
++                ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake.in
++                ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+                 @ONLY IMMEDIATE
+                 )
+ 
+-EXPORT(PACKAGE SceneLib2)
++	#INSTALL(TARGETS ${LIBRARY_NAME} DESTINATION lib)
++# This relative path allows installed files to be relocatable.
++set( CMAKECONFIG_INSTALL_DIR lib/cmake/${PROJECT_NAME} )
++file( RELATIVE_PATH REL_INCLUDE_DIR
++    "${CMAKE_INSTALL_PREFIX}/${CMAKECONFIG_INSTALL_DIR}"
++    "${CMAKE_INSTALL_PREFIX}/include"
++)
++
++install(
++	TARGETS ${LIBRARY_NAME}
++    LIBRARY DESTINATION lib
++    INCLUDES DESTINATION include
++)
++
++install(
++    FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
++    DESTINATION ${CMAKECONFIG_INSTALL_DIR}
++)
++#EXPORT(PACKAGE SceneLib2)

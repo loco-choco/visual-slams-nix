@@ -1,0 +1,12 @@
+diff --git a/examples/CMakeLists.txt b/examples/CMakeLists.txt
+index ce79ec7..0aa190a 100644
+--- a/examples/CMakeLists.txt
++++ b/examples/CMakeLists.txt
+@@ -1,5 +1,7 @@
+ ############################################################
+ # SceneLib2 (https://)
++FIND_PACKAGE(Boost COMPONENTS thread filesystem system REQUIRED)
++
+ FIND_PACKAGE(SceneLib2 REQUIRED)
+ INCLUDE_DIRECTORIES(${SceneLib2_INCLUDE_DIRS})
+ LINK_DIRECTORIES(${SceneLib2_LIBRARY_DIRS})

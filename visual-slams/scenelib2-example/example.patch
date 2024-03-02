@@ -1,0 +1,50 @@
+diff --git a/examples/MonoSlamSceneLib1.cpp b/examples/MonoSlamSceneLib1.cpp
+index d494e65..e51e77d 100644
+--- a/examples/MonoSlamSceneLib1.cpp
++++ b/examples/MonoSlamSceneLib1.cpp
+@@ -47,12 +47,16 @@ int main(int argc, char **argv)
+   bool  g_next = false;
+   bool  g_play = false;
+   int   g_frame_id  = 0;
++  if(argc < 2){
++    cout << "Path of config file not supplied";
++    exit(-1);
++  }
+ 
+   SceneLib2::Frame  frame;
+ 
+   // Create & initialise a Scene object
+   g_monoslam = new SceneLib2::MonoSLAM();
+-  g_monoslam->Init("../../data/SceneLib2.cfg");
++  g_monoslam->Init(argv[1]);
+ 
+   // Create main window
+   pangolin::CreateWindowAndBind("SceneLib2 - MonoSlamSceneLib1", 800, 480);
+@@ -83,9 +87,9 @@ int main(int argc, char **argv)
+ 
+   // Default hooks for exiting (Esc) and fullscreen (tab).
+   while (!pangolin::ShouldQuit()) {
+-    if (pangolin::HasResized()) {
+-      pangolin::DisplayBase().ActivateScissorAndClear();
+-    }
++    //if (pangolin::HasResized()) {
++    //  pangolin::DisplayBase().ActivateScissorAndClear();
++    //}
+ 
+     // Create GUIs
+     static pangolin::Var<string>  cap_graphics_toggles("left_panel1.Graphics Toggles", "");
+@@ -168,12 +172,12 @@ int main(int argc, char **argv)
+ 
+     //=========================================================================
+     // Render our UI panel when we receive input
+-    if (pangolin::HadInput()) {
++    //if (pangolin::HadInput()) {
+       left_panel1.Render();
+       left_panel2.Render();
+       right_panel1.Render();
+       right_panel2.Render();
+-    }
++    //}
+ 
+     g_next = false;
+ 

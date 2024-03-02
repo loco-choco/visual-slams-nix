@@ -1,0 +1,18 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1e5ac30..cceeb2e 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -40,13 +40,11 @@ if(BUILD_DBoW2)
+   add_library(${PROJECT_NAME} ${LIB_SHARED} ${SRCS})
+   target_include_directories(${PROJECT_NAME} PUBLIC include/DBoW2/ include/)
+   target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
+-  set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 11)
+ endif(BUILD_DBoW2)
+ 
+ if(BUILD_Demo)
+   add_executable(demo demo/demo.cpp)
+   target_link_libraries(demo ${PROJECT_NAME} ${OpenCV_LIBS})
+-  set_target_properties(demo PROPERTIES CXX_STANDARD 11)
+   file(COPY demo/images DESTINATION ${CMAKE_BINARY_DIR}/)
+ endif(BUILD_Demo)
+ 

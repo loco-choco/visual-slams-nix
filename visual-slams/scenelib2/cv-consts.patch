@@ -1,0 +1,23 @@
+diff --git a/scenelib2/framegrabber/usbcamgrabber.cpp b/scenelib2/framegrabber/usbcamgrabber.cpp
+index 89f3659..0ce860c 100644
+--- a/scenelib2/framegrabber/usbcamgrabber.cpp
++++ b/scenelib2/framegrabber/usbcamgrabber.cpp
+@@ -90,15 +90,15 @@ void UsbCamGrabber::operator ()()
+       video_->GrabNext(temp1.data, true);
+ 
+       if (!video_->PixFormat().format.compare("YUV422P"))
+-        cv::cvtColor(temp1, temp2, CV_YUV2GRAY_Y422);
++        cv::cvtColor(temp1, temp2, cv::COLOR_YUV2GRAY_Y422);
+       else
+-        cv::cvtColor(temp1, temp2, CV_RGB2GRAY);
++        cv::cvtColor(temp1, temp2, cv::COLOR_RGB2GRAY);
+ 
+       frame.frame_id = frame_id_;
+       frame.data.create(240, 320, CV_8UC1);
+ 
+       if ((temp2.cols!=320) || (temp2.rows!=240))
+-        cv::resize(temp2, frame.data, cv::Size(320,240), 1, 1, CV_INTER_LINEAR);
++        cv::resize(temp2, frame.data, cv::Size(320,240), 1, 1, cv::INTER_LINEAR);
+       else
+         frame.data = temp2.clone();
+ 
