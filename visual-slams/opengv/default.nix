@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
     owner = "laurentkneip";
     repo = pname;
     rev = "91f4b19c73450833a40e463ad3648aae80b3a7f3";
-    hash = "";
+    hash = "sha256-LfnylJ9NCHlqjT76Tgku4NwxULJ+WDAcJQ2lDKGWSI4=";
   };
 
   nativeBuildInputs = [
@@ -31,7 +31,7 @@ stdenv.mkDerivation rec {
   meta = with lib; {
     description = "";
     homepage = "https://github.com/laurentkneip/opengv";
-    license = licenses.none; # FIXME: nix-init did not found a license
+    #license = licenses.none; # FIXME: nix-init did not found a license
     maintainers = with maintainers; [ ];
     mainProgram = "g2o";
     platforms = platforms.all;
