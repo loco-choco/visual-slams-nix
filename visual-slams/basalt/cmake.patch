@@ -1,0 +1,12 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index dbea255..0da0ff2 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.10...3.18)
+ 
+ project(basalt)
+ 
+-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/" ${CMAKE_MODULE_PATH})
+ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+ 
+ if(NOT EIGEN_ROOT)

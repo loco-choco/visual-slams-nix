@@ -2,6 +2,9 @@
   lib,
   boost,
   eigen,
+  tbb_2021_8,
+  fmt,
+  bzip2,
   freeglut,
   glew,
   opencv,
@@ -17,10 +20,10 @@ stdenv.mkDerivation rec {
 
   src = fetchFromGitLab {
     domain = "gitlab.freedesktop.org";
-    owner = "monado";
+    owner = "mateosss";
     repo = pname;
     rev = "95dd2d7bc5fddaf893103fdc1d4fed687dcc327b";
-    hash = ""; 
+    hash = "sha256-awKxKOJP9+qyQQCKBq+d8b1zLXLsBIeouigOoi9vnyE="; 
   };
 
   nativeBuildInputs = [
@@ -32,17 +35,18 @@ stdenv.mkDerivation rec {
   buildInputs = [ 
     boost
     eigen
+    tbb_2021_8
+    bzip2
     freeglut
+    fmt
     glew
     opencv
     pangolin
   ];
 
-  #patches = [
-  #  ./cmake.patch
-  #  ./cmake-scenelib2.patch
-  #  ./cv-consts.patch
-  #  ];
+  patches = [
+    ./cmake.patch
+  ];
 
   #installPhase = ''
   ##  mkdir -p $out/include
