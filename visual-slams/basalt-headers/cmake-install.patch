@@ -1,0 +1,14 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index bcb86c5..254d70b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -183,3 +183,9 @@ if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR BASALT_HEADERS_BUILD_TESTING) AN
+   enable_testing()
+   add_subdirectory(test)
+ endif()
++
++install(
++    TARGETS ${LIBRARY_NAME}
++    LIBRARY DESTINATION lib
++    INCLUDES DESTINATION include
++)

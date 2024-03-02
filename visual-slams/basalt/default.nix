@@ -5,6 +5,9 @@
   tbb_2021_8,
   fmt,
   bzip2,
+  opengv,
+  cli11,
+  magic-enum,
   freeglut,
   glew,
   opencv,
@@ -36,9 +39,12 @@ stdenv.mkDerivation rec {
     boost
     eigen
     tbb_2021_8
-    bzip2
-    freeglut
     fmt
+    bzip2
+    opengv
+    cli11
+    magic-enum
+    freeglut
     glew
     opencv
     pangolin

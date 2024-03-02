@@ -2,6 +2,9 @@
   lib,
   boost,
   eigen,
+  sophus,
+  fmt,
+  cereal_1_3_2,
   fetchFromGitLab,
   cmake,
   pkg-config,
@@ -16,7 +19,7 @@ stdenv.mkDerivation rec {
     owner = "mateosss";
     repo = pname;
     rev = "28b09b3a5802d44835655778cdd9b1974569bd47";
-    hash = ""; 
+    hash = "sha256-gCHCB/1hEy3R/MGexdbq3tIz30Ciw2QmmAqz5wjKhM0="; 
   };
 
   nativeBuildInputs = [
@@ -28,9 +31,19 @@ stdenv.mkDerivation rec {
   buildInputs = [ 
     boost
     eigen
+    sophus
+    fmt
+    cereal_1_3_2
   ];
 
   patches = [
+    ./cmake-install.patch
+  ];
+
+  cmakeFlags = [
+    "-DBASALT_BUILTIN_EIGEN=OFF"
+    "-DBASALT_BUILTIN_SOPHUS=OFF"
+    "-DBASALT_BUILTIN_CEREAL=OFF"
   ];
 
   #installPhase = ''
