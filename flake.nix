@@ -22,6 +22,7 @@
 	  sophus = pkgs.sophus;
 	  dso = pkgs.dso;
 	  basalt = pkgs.basalt;
+	  basalt-headers = pkgs.basalt-headers;
 	  opengv = pkgs.opengv;
 	  default = pkgs.scenelib2-example;
 	};

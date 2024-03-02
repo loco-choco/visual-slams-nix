@@ -1,0 +1,119 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index dbea255..5a32d4a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.10...3.18)
+ 
+ project(basalt)
+ 
+-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/" ${CMAKE_MODULE_PATH})
+ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+ 
+ if(NOT EIGEN_ROOT)
+@@ -277,7 +276,7 @@ set(CMAKE_CXX_FLAGS "${BASALT_CXX_FLAGS} ${BASALT_MARCH_FLAGS} ${BASALT_PASSED_C
+ 
+ 
+ set(EIGEN_INCLUDE_DIR_HINTS ${EIGEN_ROOT})
+-find_package(Eigen3 3.4.0 EXACT REQUIRED MODULE)
++find_package(Eigen3 3.4.0 EXACT REQUIRED)
+ message(STATUS "Found Eigen headers in: ${EIGEN3_INCLUDE_DIR}")
+ if(NOT EIGEN3_INCLUDE_DIR MATCHES "^${EIGEN_ROOT}")
+   message(WARNING "Found Eigen headers are outside of specified EIGEN_ROOT '${EIGEN_ROOT}'")
+@@ -303,7 +302,7 @@ set_property(TARGET basalt::opencv PROPERTY INTERFACE_LINK_LIBRARIES ${OpenCV_LI
+ find_package(fmt REQUIRED)
+ message(STATUS "Found {fmt} ${fmt_VERSION} in: ${fmt_DIR}")
+ 
+-add_subdirectory(thirdparty)
++#add_subdirectory(thirdparty)
+ 
+ # custom scoped vit target from monado
+ add_library(basalt::vit INTERFACE IMPORTED)
+@@ -311,12 +310,16 @@ set_property(TARGET basalt::vit PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_C
+ target_sources(basalt::vit INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/vit/vit_implementation_helper.cpp)
+ 
+ # custom scoped cli11 target
+-add_library(basalt::cli11 INTERFACE IMPORTED)
+-set_property(TARGET basalt::cli11 PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/CLI11/include)
++find_package(CLI11 REQUIRED)
++message(STATUS "Found cli11 ${CLI11_VERSION} in: ${CLI11_DIR}")
++#add_library(cli11 INTERFACE IMPORTED)
++#set_property(TARGET cli11 PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/CLI11/include)
+ 
+ # custom scoped magic_enum target
+ add_library(basalt::magic_enum INTERFACE IMPORTED)
+-set_property(TARGET basalt::magic_enum PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/magic_enum/include)
++find_package(magic_enum REQUIRED)
++message(STATUS "Found magic_enum ${magic_enum_VERSION} in: ${magic_enum_DIR}")
++#set_property(TARGET basalt::magic_enum PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/magic_enum/include)
+ 
+ # main library
+ add_library(basalt_internal STATIC)
+@@ -402,7 +405,7 @@ target_sources(basalt_internal
+ )
+ 
+ target_link_libraries(basalt_internal
+-  PUBLIC ${STD_CXX_FS} basalt::opencv basalt::basalt-headers TBB::tbb pangolin basalt::cli11 basalt::vit basalt::magic_enum
++  PUBLIC ${STD_CXX_FS} basalt::opencv basalt::basalt-headers TBB::tbb pangolin cli11 basalt::vit basalt::magic_enum
+   PRIVATE nlohmann::json fmt::fmt)
+ target_include_directories(basalt_internal PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+ target_compile_definitions(basalt_internal PUBLIC ${BASALT_COMPILE_DEFINITIONS})
+@@ -450,47 +453,47 @@ target_link_libraries(basalt basalt_internal)
+ if(NOT BASALT_BUILD_SHARED_LIBRARY_ONLY)
+ 
+ add_executable(basalt_calibrate src/calibrate.cpp src/calibration/cam_calib.cpp)
+-target_link_libraries(basalt_calibrate basalt_internal pangolin basalt::cli11)
++target_link_libraries(basalt_calibrate basalt_internal pangolin cli11)
+ 
+ add_executable(basalt_calibrate_imu src/calibrate_imu.cpp src/calibration/cam_imu_calib.cpp)
+-target_link_libraries(basalt_calibrate_imu basalt_internal pangolin basalt::cli11)
++target_link_libraries(basalt_calibrate_imu basalt_internal pangolin cli11)
+ 
+ 
+ add_executable(basalt_vio_sim src/vio_sim.cpp)
+-target_link_libraries(basalt_vio_sim basalt_internal pangolin basalt::cli11)
++target_link_libraries(basalt_vio_sim basalt_internal pangolin cli11)
+ 
+ add_executable(basalt_mapper_sim src/mapper_sim.cpp)
+-target_link_libraries(basalt_mapper_sim basalt_internal pangolin basalt::cli11)
++target_link_libraries(basalt_mapper_sim basalt_internal pangolin cli11)
+ 
+ # mapper sim native doesn't use template free interface
+ if(BASALT_INSTANTIATIONS_DOUBLE)
+   add_executable(basalt_mapper_sim_naive src/mapper_sim_naive.cpp)
+-  target_link_libraries(basalt_mapper_sim_naive basalt_internal pangolin basalt::cli11)
++  target_link_libraries(basalt_mapper_sim_naive basalt_internal pangolin cli11)
+ endif()
+ 
+ add_executable(basalt_mapper src/mapper.cpp)
+-target_link_libraries(basalt_mapper basalt_internal pangolin basalt::cli11)
++target_link_libraries(basalt_mapper basalt_internal pangolin cli11)
+ 
+ 
+ add_executable(basalt_opt_flow src/opt_flow.cpp)
+-target_link_libraries(basalt_opt_flow basalt_internal pangolin basalt::cli11)
++target_link_libraries(basalt_opt_flow basalt_internal pangolin cli11)
+ 
+ add_executable(basalt_vio src/vio.cpp)
+-target_link_libraries(basalt_vio basalt_internal pangolin basalt::cli11)
++target_link_libraries(basalt_vio basalt_internal pangolin cli11)
+ 
+ add_executable(basalt_time_alignment src/time_alignment.cpp)
+-target_link_libraries(basalt_time_alignment basalt_internal pangolin basalt::cli11)
++target_link_libraries(basalt_time_alignment basalt_internal pangolin cli11)
+ 
+ add_executable(basalt_kitti_eval src/kitti_eval.cpp)
+-target_link_libraries(basalt_kitti_eval basalt::basalt-headers basalt::cli11)
++target_link_libraries(basalt_kitti_eval basalt::basalt-headers cli11)
+ 
+ find_package(realsense2 QUIET)
+ if(realsense2_FOUND)
+   add_executable(basalt_rs_t265_record src/rs_t265_record.cpp src/device/rs_t265.cpp)
+-  target_link_libraries(basalt_rs_t265_record basalt_internal realsense2::realsense2 pangolin basalt::cli11)
++  target_link_libraries(basalt_rs_t265_record basalt_internal realsense2::realsense2 pangolin cli11)
+ 
+   add_executable(basalt_rs_t265_vio src/rs_t265_vio.cpp src/device/rs_t265.cpp)
+-  target_link_libraries(basalt_rs_t265_vio basalt_internal realsense2::realsense2 pangolin basalt::cli11)
++  target_link_libraries(basalt_rs_t265_vio basalt_internal realsense2::realsense2 pangolin cli11)
+ endif()
+ 
+ endif(NOT BASALT_BUILD_SHARED_LIBRARY_ONLY)
