@@ -8,4 +8,5 @@ final: prev: {
   sophus = final.pkgs.callPackage ./visual-slams/sophus {};
   dso = final.pkgs.callPackage ./visual-slams/dso {};
   basalt = final.pkgs.callPackage ./visual-slams/basalt {};
+  opengv = final.pkgs.callPackage ./visual-slams/opengv {};
 }
