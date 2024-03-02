@@ -7,4 +7,5 @@ final: prev: {
   orbslam2 = final.pkgs.callPackage ./visual-slams/orbslam2 {};
   sophus = final.pkgs.callPackage ./visual-slams/sophus {};
   dso = final.pkgs.callPackage ./visual-slams/dso {};
+  basalt = final.pkgs.callPackage ./visual-slams/basalt {};
 }

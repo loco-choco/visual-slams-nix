@@ -21,7 +21,8 @@
 	  orbslam2 = pkgs.orbslam2;
 	  sophus = pkgs.sophus;
 	  dso = pkgs.dso;
-	  default = pkgs.ltspice;
+	  basalt = pkgs.basalt;
+	  default = pkgs.scenelib2-example;
 	};
       }
     ) // {
