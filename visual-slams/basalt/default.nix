@@ -73,6 +73,7 @@ stdenv.mkDerivation rec {
   patches = [
     ./cmake.patch
     ./cmake-thirdparty.patch
+    ./cmake-thirdparty-apriltag.patch
   ];
 
   cmakeFlags = [

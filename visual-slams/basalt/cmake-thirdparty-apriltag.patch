@@ -1,0 +1,11 @@
+diff --git a/thirdparty/apriltag/CMakeLists.txt b/thirdparty/apriltag/CMakeLists.txt
+index 9c36fa8..7af2715 100644
+--- a/thirdparty/apriltag/CMakeLists.txt
++++ b/thirdparty/apriltag/CMakeLists.txt
+@@ -1,5 +1,6 @@
+ cmake_minimum_required(VERSION 3.2...3.18)
+ 
++find_package(Sophus REQUIRED)
+ 
+ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+ SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
