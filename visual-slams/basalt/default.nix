@@ -10,13 +10,14 @@
   magic-enum,
   sophus,
   cereal_1_3_2,
-  nlohmann_json,
   freeglut,
   glew,
+  libGL,
   opencv,
   pangolin,
   basalt-headers,
   fetchFromGitLab,
+  fetchFromGitHub,
   cmake,
   pkg-config,
   extra-cmake-modules
@@ -48,6 +49,7 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     cmake
+    cli11
     extra-cmake-modules
     pkg-config
   ];
@@ -63,11 +65,20 @@ stdenv.mkDerivation rec {
     magic-enum
     sophus
     cereal_1_3_2
-    nlohmann_json
     freeglut
     glew
+    libGL
     opencv
     pangolin
+    #(pangolin.overrideAttrs(finalAttrs: previousAttrs: {
+    #  version="0.6.0";
+    #  src = fetchFromGitHub {
+    #    owner = "stevenlovegrove";
+    #    repo = "Pangolin";
+    #    rev = "86eb4975fc4fc8b5d92148c2e370045ae9bf9f5d";
+    #    sha256 = "sha256-fKteOuOuGMWPZFxOUGCUcjeLXtTUXSGMSs1QfM5qblU=";
+    #  };
+    #}))
   ];
 
   patches = [
@@ -80,6 +91,8 @@ stdenv.mkDerivation rec {
     "-DBASALT_BUILTIN_EIGEN=OFF"
     "-DBASALT_BUILTIN_SOPHUS=OFF"
     "-DBASALT_BUILTIN_CEREAL=OFF"
+    "-DHAVE_GLEW=ON"
+    "-DBASALT_BUILD_SHARED_LIBRARY_ONLY=TRUE"
   ];
   #installPhase = ''
   ##  mkdir -p $out/include

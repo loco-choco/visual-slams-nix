@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index dbea255..66fb662 100644
+index dbea255..e2d3ed4 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -2,11 +2,10 @@ cmake_minimum_required(VERSION 3.10...3.18)
@@ -24,7 +24,19 @@ index dbea255..66fb662 100644
  message(STATUS "Found Eigen headers in: ${EIGEN3_INCLUDE_DIR}")
  if(NOT EIGEN3_INCLUDE_DIR MATCHES "^${EIGEN_ROOT}")
    message(WARNING "Found Eigen headers are outside of specified EIGEN_ROOT '${EIGEN_ROOT}'")
-@@ -311,12 +310,16 @@ set_property(TARGET basalt::vit PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_C
+@@ -295,6 +294,11 @@ find_package(OpenCV REQUIRED COMPONENTS core imgproc calib3d highgui)
+ message(STATUS "Found OpenCV ${OpenCV_VERSION} headers in: ${OpenCV_INCLUDE_DIRS}")
+ message(STATUS "Found OpenCV_LIBS: ${OpenCV_LIBS}")
+ 
++find_package(GLEW REQUIRED)
++message(STATUS "Found GLUT ${GLUT_VERSION} headers in: ${GLUT_INCLUDE_DIRS}")
++include_directories(${GLEW_INCLUDE_DIRS})
++#link_libraries(${GLEW_LIBRARIES})
++
+ # Add our own custom scoped opencv target since none is provided by OpenCV itself
+ add_library(basalt::opencv INTERFACE IMPORTED)
+ set_property(TARGET basalt::opencv PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${OpenCV_INCLUDE_DIRS})
+@@ -311,12 +315,17 @@ set_property(TARGET basalt::vit PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_C
  target_sources(basalt::vit INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/vit/vit_implementation_helper.cpp)
  
  # custom scoped cli11 target
@@ -32,6 +44,7 @@ index dbea255..66fb662 100644
 -set_property(TARGET basalt::cli11 PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/CLI11/include)
 +find_package(CLI11 REQUIRED)
 +message(STATUS "Found cli11 ${CLI11_VERSION} in: ${CLI11_DIR}")
++
 +#add_library(cli11 INTERFACE IMPORTED)
 +#set_property(TARGET cli11 PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/CLI11/include)
  
@@ -44,16 +57,16 @@ index dbea255..66fb662 100644
  
  # main library
  add_library(basalt_internal STATIC)
-@@ -402,7 +405,7 @@ target_sources(basalt_internal
+@@ -402,7 +411,7 @@ target_sources(basalt_internal
  )
  
  target_link_libraries(basalt_internal
 -  PUBLIC ${STD_CXX_FS} basalt::opencv basalt::basalt-headers TBB::tbb pangolin basalt::cli11 basalt::vit basalt::magic_enum
-+  PUBLIC ${STD_CXX_FS} basalt::opencv basalt::basalt-headers TBB::tbb pangolin cli11 basalt::vit basalt::magic_enum
++  PUBLIC ${STD_CXX_FS} basalt::opencv basalt::basalt-headers TBB::tbb pangolin CLI11::CLI11 basalt::vit basalt::magic_enum
    PRIVATE nlohmann::json fmt::fmt)
  target_include_directories(basalt_internal PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
  target_compile_definitions(basalt_internal PUBLIC ${BASALT_COMPILE_DEFINITIONS})
-@@ -450,47 +453,47 @@ target_link_libraries(basalt basalt_internal)
+@@ -450,47 +459,47 @@ target_link_libraries(basalt basalt_internal)
  if(NOT BASALT_BUILD_SHARED_LIBRARY_ONLY)
  
  add_executable(basalt_calibrate src/calibrate.cpp src/calibration/cam_calib.cpp)

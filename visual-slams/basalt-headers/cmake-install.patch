@@ -1,14 +1,24 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index bcb86c5..254d70b 100644
+index bcb86c5..8488264 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -183,3 +183,9 @@ if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR BASALT_HEADERS_BUILD_TESTING) AN
+@@ -149,6 +149,9 @@ target_include_directories(basalt-headers INTERFACE
+ # To support cmake < 3.13, use absolute paths (see: https://crascit.com/2016/01/31/enhanced-source-file-handling-with-target_sources/)
+ target_sources(basalt-headers
+   INTERFACE
++  FILE_SET HEADERS
++      BASE_DIRS include
++    FILES
+     ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/calibration/calib_bias.hpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/calibration/calibration.hpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/camera/bal_camera.hpp
+@@ -183,3 +186,9 @@ if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR BASALT_HEADERS_BUILD_TESTING) AN
    enable_testing()
    add_subdirectory(test)
  endif()
 +
-+install(
-+    TARGETS ${LIBRARY_NAME}
-+    LIBRARY DESTINATION lib
-+    INCLUDES DESTINATION include
++install(TARGETS basalt-headers EXPORT basalt-headersConfig
++  FILE_SET HEADERS DESTINATION include)
++install(EXPORT basalt-headersConfig NAMESPACE basalt::
++  DESTINATION lib/cmake/basalt-headers
 +)

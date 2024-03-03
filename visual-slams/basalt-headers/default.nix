@@ -47,12 +47,16 @@ stdenv.mkDerivation rec {
   ];
 
   #installPhase = ''
-  ##  mkdir -p $out/include
+    #ls -a
+   # ls -a ${fmt.src}
+   # cat ${fmt.src}/README.rst
+   # dsa
+  #  mkdir -p $out/include
   #  cp $src/scenelib2/monoslam.h $out/include
   #  mkdir -p $out/lib
   #  cp scenelib2/libscenelib2.so $out/lib
   #  mkdir -p $out/lib/cmake
   #  mkdir -p $out/lib/cmake/SceneLib2
   #  cp scenelib2/SceneLib2Config.cmake $out/lib/cmake/SceneLib2
-  #'';
+ # '';
 }
