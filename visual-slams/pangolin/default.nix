@@ -6,13 +6,13 @@
 stdenv.mkDerivation rec {
   pname = "pangolin";
 
-  version = "0.9.1";
+  version = "v0.6";
 
   src = fetchFromGitHub {
     owner = "stevenlovegrove";
     repo = "Pangolin";
-    rev = "v${version}";
-    sha256 = "sha256-B5YuNcJZHjR3dlVs66rySi68j29O3iMtlQvCjTUZBeY=";
+    rev = "86eb4975fc4fc8b5d92148c2e370045ae9bf9f5d";
+    sha256 = "sha256-fKteOuOuGMWPZFxOUGCUcjeLXtTUXSGMSs1QfM5qblU=";
   };
 
   nativeBuildInputs = [ cmake pkg-config doxygen ];
@@ -34,8 +34,8 @@ stdenv.mkDerivation rec {
   cmakeFlags = [ "-DBUILD_TESTS=OFF" "-DHAVE_GLEW=ON" ];
 
   patches = [
-    ./cmake-opengl.patch
-    ./opengl.patch
+    ./cstdint.patch
+    #./opengl.patch
   ];
 
   meta = {

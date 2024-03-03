@@ -1,0 +1,11 @@
+diff --git a/src/image/image_io_jpg.cpp b/src/image/image_io_jpg.cpp
+index cfa110a1..9b1b98df 100644
+--- a/src/image/image_io_jpg.cpp
++++ b/src/image/image_io_jpg.cpp
+@@ -1,5 +1,6 @@
+ #include <algorithm>
+ #include <fstream>
++#include <cstdint>
+ 
+ 
+ #include <pangolin/platform.h>
