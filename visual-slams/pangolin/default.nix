@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchFromGitHub, cmake, pkg-config, doxygen, libGL, glew
+{ stdenv, lib, fetchFromGitHub, cmake, pkg-config, doxygen, glew
 , xorg, ffmpeg_4, libjpeg, libpng, libtiff, eigen
 , Carbon ? null, Cocoa ? null
 }:
@@ -18,7 +18,6 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ cmake pkg-config doxygen ];
 
   buildInputs = [
-    libGL
     glew
     xorg.libX11
     ffmpeg_4
@@ -33,6 +32,10 @@ stdenv.mkDerivation rec {
   # pangolin, which isn't what we want (or available).
   doCheck = false;
   cmakeFlags = [ "-DBUILD_TESTS=OFF" ];
+
+  patches = [
+    ./cmake-opengl.patch
+  ];
 
   meta = {
     description = "A lightweight portable rapid development library for managing OpenGL display / interaction and abstracting video input";

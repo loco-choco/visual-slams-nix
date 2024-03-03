@@ -24,6 +24,7 @@
 	  basalt = pkgs.basalt;
 	  basalt-headers = pkgs.basalt-headers;
 	  opengv = pkgs.opengv;
+	  pangolin = pkgs.pangolin;
 	  default = pkgs.scenelib2-example;
 	};
       }

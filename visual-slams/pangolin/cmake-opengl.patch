@@ -1,0 +1,13 @@
+diff --git a/components/pango_opengl/CMakeLists.txt b/components/pango_opengl/CMakeLists.txt
+index 7b04bf7f..20dcc7f5 100644
+--- a/components/pango_opengl/CMakeLists.txt
++++ b/components/pango_opengl/CMakeLists.txt
+@@ -24,6 +24,8 @@ PRIVATE
+ 
+ find_package(Eigen3 REQUIRED NO_MODULE)
+ message(STATUS "Found Eigen: '${EIGEN3_INCLUDE_DIRS}'")
++find_package(GLEW REQUIRED NO_MODULE)
++message(STATUS "Found GLEW: '${GLEW_INCLUDE_DIRS}'")
+ target_compile_definitions(${COMPONENT} PUBLIC HAVE_EIGEN HAVE_GLEW)
+ 
+ target_link_libraries(${COMPONENT} PUBLIC pango_core pango_image Eigen3::Eigen)
