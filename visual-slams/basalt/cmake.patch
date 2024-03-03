@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index dbea255..5a32d4a 100644
+index dbea255..66fb662 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.10...3.18)
+@@ -2,11 +2,10 @@ cmake_minimum_required(VERSION 3.10...3.18)
  
  project(basalt)
  
@@ -10,6 +10,11 @@ index dbea255..5a32d4a 100644
  set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
  
  if(NOT EIGEN_ROOT)
+-  set(EIGEN_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/basalt-headers/thirdparty/eigen")
++  set(EIGEN_ROOT "${BASALT_HEADERS_SRC}/eigen")
+ endif()
+ 
+ string(TOLOWER "${PROJECT_NAME}" PROJECT_NAME_LOWERCASE)
 @@ -277,7 +276,7 @@ set(CMAKE_CXX_FLAGS "${BASALT_CXX_FLAGS} ${BASALT_MARCH_FLAGS} ${BASALT_PASSED_C
  
  
@@ -19,15 +24,6 @@ index dbea255..5a32d4a 100644
  message(STATUS "Found Eigen headers in: ${EIGEN3_INCLUDE_DIR}")
  if(NOT EIGEN3_INCLUDE_DIR MATCHES "^${EIGEN_ROOT}")
    message(WARNING "Found Eigen headers are outside of specified EIGEN_ROOT '${EIGEN_ROOT}'")
-@@ -303,7 +302,7 @@ set_property(TARGET basalt::opencv PROPERTY INTERFACE_LINK_LIBRARIES ${OpenCV_LI
- find_package(fmt REQUIRED)
- message(STATUS "Found {fmt} ${fmt_VERSION} in: ${fmt_DIR}")
- 
--add_subdirectory(thirdparty)
-+#add_subdirectory(thirdparty)
- 
- # custom scoped vit target from monado
- add_library(basalt::vit INTERFACE IMPORTED)
 @@ -311,12 +310,16 @@ set_property(TARGET basalt::vit PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_C
  target_sources(basalt::vit INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/vit/vit_implementation_helper.cpp)
  
@@ -40,11 +36,11 @@ index dbea255..5a32d4a 100644
 +#set_property(TARGET cli11 PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/CLI11/include)
  
  # custom scoped magic_enum target
- add_library(basalt::magic_enum INTERFACE IMPORTED)
--set_property(TARGET basalt::magic_enum PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/magic_enum/include)
 +find_package(magic_enum REQUIRED)
 +message(STATUS "Found magic_enum ${magic_enum_VERSION} in: ${magic_enum_DIR}")
-+#set_property(TARGET basalt::magic_enum PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/magic_enum/include)
+ add_library(basalt::magic_enum INTERFACE IMPORTED)
+-set_property(TARGET basalt::magic_enum PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/magic_enum/include)
++set_property(TARGET basalt::magic_enum PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${magic_enum_INCLUDE_DIRS})
  
  # main library
  add_library(basalt_internal STATIC)
