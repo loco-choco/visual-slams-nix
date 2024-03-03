@@ -10,4 +10,5 @@ final: prev: {
   basalt = final.pkgs.callPackage ./visual-slams/basalt {};
   basalt-headers = final.pkgs.callPackage ./visual-slams/basalt-headers {};
   opengv = final.pkgs.callPackage ./visual-slams/opengv {};
+  pangolin = final.pkgs.callPackage ./visual-slams/pangolin {};
 }
