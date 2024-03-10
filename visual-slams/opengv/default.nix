@@ -29,11 +29,10 @@ stdenv.mkDerivation rec {
   ];
 
   meta = with lib; {
-    description = "";
+    description = "OpenGV is a collection of computer vision methods for solving geometric vision problems. It is hosted and maintained by the Mobile Perception Lab of ShanghaiTech. ";
     homepage = "https://github.com/laurentkneip/opengv";
     #license = licenses.none; # FIXME: nix-init did not found a license
-    maintainers = with maintainers; [ ];
-    mainProgram = "g2o";
+    maintainers = with maintainers; [ locochoco ];
     platforms = platforms.all;
   };
 }

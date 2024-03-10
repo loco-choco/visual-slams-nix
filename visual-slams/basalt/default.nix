@@ -14,10 +14,9 @@
   glew,
   libGL,
   opencv,
-  pangolin,
+  pangolin_0_6,
   basalt-headers,
   fetchFromGitLab,
-  fetchFromGitHub,
   cmake,
   pkg-config,
   extra-cmake-modules
@@ -69,16 +68,7 @@ stdenv.mkDerivation rec {
     glew
     libGL
     opencv
-    pangolin
-    #(pangolin.overrideAttrs(finalAttrs: previousAttrs: {
-    #  version="0.6.0";
-    #  src = fetchFromGitHub {
-    #    owner = "stevenlovegrove";
-    #    repo = "Pangolin";
-    #    rev = "86eb4975fc4fc8b5d92148c2e370045ae9bf9f5d";
-    #    sha256 = "sha256-fKteOuOuGMWPZFxOUGCUcjeLXtTUXSGMSs1QfM5qblU=";
-    #  };
-    #}))
+    pangolin_0_6
   ];
 
   patches = [
@@ -91,16 +81,6 @@ stdenv.mkDerivation rec {
     "-DBASALT_BUILTIN_EIGEN=OFF"
     "-DBASALT_BUILTIN_SOPHUS=OFF"
     "-DBASALT_BUILTIN_CEREAL=OFF"
-    "-DHAVE_GLEW=ON"
     "-DBASALT_BUILD_SHARED_LIBRARY_ONLY=TRUE"
   ];
-  #installPhase = ''
-  ##  mkdir -p $out/include
-  #  cp $src/scenelib2/monoslam.h $out/include
-  #  mkdir -p $out/lib
-  #  cp scenelib2/libscenelib2.so $out/lib
-  #  mkdir -p $out/lib/cmake
-  #  mkdir -p $out/lib/cmake/SceneLib2
-  #  cp scenelib2/SceneLib2Config.cmake $out/lib/cmake/SceneLib2
-  #'';
 }

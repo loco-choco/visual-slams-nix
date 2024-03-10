@@ -10,5 +10,6 @@ final: prev: {
   basalt = final.pkgs.callPackage ./visual-slams/basalt {};
   basalt-headers = final.pkgs.callPackage ./visual-slams/basalt-headers {};
   opengv = final.pkgs.callPackage ./visual-slams/opengv {};
-  pangolin = final.pkgs.callPackage ./visual-slams/pangolin {};
+  pangolin_0_6 = final.pkgs.callPackage ./visual-slams/pangolin_0_6 {};
+  dm-vio = final.pkgs.callPackage ./visual-slams/dm-vio {};
 }
