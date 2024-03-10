@@ -2,20 +2,13 @@
   lib,
   boost,
   eigen,
-  tbb_2021_8,
-  fmt,
-  bzip2,
-  opengv,
-  cli11,
-  magic-enum,
-  sophus,
-  cereal_1_3_2,
-  freeglut,
-  glew,
-  libGL,
+  gtsam,
+  tbb,
+  yaml-cpp,
+  libzip,
+  suitesparse,
   opencv,
   pangolin_0_6,
-  basalt-headers,
   fetchFromGitHub,
   cmake,
   pkg-config,
@@ -27,14 +20,13 @@ stdenv.mkDerivation rec {
 
   src = fetchFromGitHub {
     owner = "lukasvst";
-    repo = pname;
+    repo = "dm-vio";
     rev = "3b5319aa4f0cf03b59bcb7573ee66861de1681df";
     hash = "sha256-Qm7apT5aeZ5JLjO9BSHgbuVJgZxfq/DqGi5NZLDmRBI=";
   };
 
   nativeBuildInputs = [
     cmake
-    cli11
     extra-cmake-modules
     pkg-config
   ];
@@ -42,22 +34,18 @@ stdenv.mkDerivation rec {
   buildInputs = [ 
     boost
     eigen
-    tbb_2021_8
-    fmt
-    bzip2
-    opengv
-    cli11
-    magic-enum
-    sophus
-    cereal_1_3_2
-    freeglut
-    glew
-    libGL
+    gtsam
+    tbb
+    yaml-cpp
+    libzip
+    suitesparse
     opencv
     pangolin_0_6
   ];
 
   patches = [
+    ./cmake.patch
+    ./include.patch
   ];
 
   cmakeFlags = [
