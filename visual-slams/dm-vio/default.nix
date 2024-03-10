@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
     owner = "lukasvst";
     repo = pname;
     rev = "3b5319aa4f0cf03b59bcb7573ee66861de1681df";
-    hash = "";
+    hash = "sha256-Qm7apT5aeZ5JLjO9BSHgbuVJgZxfq/DqGi5NZLDmRBI=";
   };
 
   nativeBuildInputs = [

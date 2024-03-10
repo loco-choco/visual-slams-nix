@@ -4,7 +4,7 @@
 , eigen
 , boost
 , libzip
-, pangolin
+, pangolin_0_6
 , opencv
 , fmt
 , sophus
@@ -35,6 +35,7 @@ stdenv.mkDerivation rec {
     opencv
     fmt
     sophus
+    pangolin_0_6
   ];
 
   patches = [

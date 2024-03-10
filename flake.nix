@@ -26,6 +26,7 @@
 	  opengv = pkgs.opengv;
 	  pangolin_0_6 = pkgs.pangolin_0_6;
 	  dm-vio = pkgs.dm-vio;
+	  gtsam = pkgs.gtsam;
 	  default = pkgs.scenelib2-example;
 	};
       }

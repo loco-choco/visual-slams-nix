@@ -12,4 +12,5 @@ final: prev: {
   opengv = final.pkgs.callPackage ./visual-slams/opengv {};
   pangolin_0_6 = final.pkgs.callPackage ./visual-slams/pangolin_0_6 {};
   dm-vio = final.pkgs.callPackage ./visual-slams/dm-vio {};
+  gtsam = final.pkgs.callPackage ./visual-slams/gtsam {};
 }
