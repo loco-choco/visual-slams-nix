@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 1bfa08b..e296ab0 100644
+index 1bfa08b..c3d27ef 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -15,7 +15,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
@@ -20,3 +20,14 @@ index 1bfa08b..e296ab0 100644
      target_link_libraries(dmvio_dataset dmvio ${DMVIO_LINKED_LIBRARIES})
  
  	if(realsense2_FOUND)
+@@ -205,3 +205,10 @@ else()
+ endif()
+ 
+ add_subdirectory(test)
++
++# Install
++install(
++	TARGETS dmvio dmvio_dataset
++	LIBRARY DESTINATION lib
++	INCLUDES DESTINATION include
++	RUNTIME DESTINATION bin)

@@ -8,10 +8,13 @@
   libzip,
   suitesparse,
   opencv,
+  freeglut,
+  glew,
   pangolin_0_6,
   fetchFromGitHub,
   cmake,
   pkg-config,
+  autoPatchelfHook,
   extra-cmake-modules
 }:
 stdenv.mkDerivation rec {
@@ -29,6 +32,7 @@ stdenv.mkDerivation rec {
     cmake
     extra-cmake-modules
     pkg-config
+    autoPatchelfHook
   ];
 
   buildInputs = [ 
@@ -39,7 +43,9 @@ stdenv.mkDerivation rec {
     yaml-cpp
     libzip
     suitesparse
-    opencv
+    (opencv.override{ enableGtk2 = true; })
+    freeglut
+    glew
     pangolin_0_6
   ];
 
