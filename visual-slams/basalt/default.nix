@@ -19,6 +19,7 @@
   fetchFromGitLab,
   cmake,
   pkg-config,
+  autoPatchelfHook,
   extra-cmake-modules
 }:
 stdenv.mkDerivation rec {
@@ -51,6 +52,7 @@ stdenv.mkDerivation rec {
     cli11
     extra-cmake-modules
     pkg-config
+    autoPatchelfHook
   ];
 
   buildInputs = [ 
@@ -67,7 +69,7 @@ stdenv.mkDerivation rec {
     freeglut
     glew
     libGL
-    opencv
+    (opencv.override{ enableGtk2 = true; })
     pangolin_0_6
   ];
 
@@ -75,12 +77,16 @@ stdenv.mkDerivation rec {
     ./cmake.patch
     ./cmake-thirdparty.patch
     ./cmake-thirdparty-apriltag.patch
+    ./remove-ros.patch
+    ./opengl.patch
   ];
 
   cmakeFlags = [
     "-DBASALT_BUILTIN_EIGEN=OFF"
     "-DBASALT_BUILTIN_SOPHUS=OFF"
     "-DBASALT_BUILTIN_CEREAL=OFF"
-    "-DBASALT_BUILD_SHARED_LIBRARY_ONLY=TRUE"
+    "-DBASALT_INSTANTIATIONS_DOUBLE=OFF" 
+    "-DBUILD_TESTS=OFF"
+    #"-DBASALT_BUILD_SHARED_LIBRARY_ONLY=TRUE"
   ];
 }

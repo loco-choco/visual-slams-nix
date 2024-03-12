@@ -1,6 +1,8 @@
 { lib
 , stdenv
+, boost
 , eigen
+, tbb
 , fetchFromGitHub
 , cmake
 }:
@@ -10,10 +12,10 @@ stdenv.mkDerivation (finalAttrs: {
   version = "4.2";
 
   src = fetchFromGitHub {
-    owner = "laurentkneip";
+    owner = "borglab";
     repo = "gtsam";
     rev = finalAttrs.version;
-    hash = "";
+    hash = "sha256-HjpGrHclpm2XsicZty/rX/RM/762wzmj4AAoEfni8es=";
   };
 
   nativeBuildInputs = [
@@ -21,16 +23,20 @@ stdenv.mkDerivation (finalAttrs: {
   ];
 
   buildInputs = [
+    boost
     eigen
+    tbb
+    #mkl #make this optional 
   ];
 
-  cmakeFlakes = [
+  cmakeFlags = [
+    (lib.cmakeBool "GTSAM_USE_SYSTEM_EIGEN" true)
   ];
 
   meta = {
     description = "A library of C++ classes that implement smoothing and mapping (SAM) in robotics and vision";
     homepage = "https://gtsam.org/";
-    license = lib.licenses.none; 
+    license = lib.licenses.bsd3; 
     maintainers = [ lib.maintainers.locochoco ];
     platforms = lib.platforms.all;
   };

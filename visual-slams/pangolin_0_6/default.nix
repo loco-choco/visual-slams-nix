@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchFromGitHub, cmake, pkg-config, doxygen, glew
+{ stdenv, lib, fetchFromGitHub, cmake, pkg-config, doxygen, glew, freeglut, libGL
 , xorg, ffmpeg_4, libjpeg, libpng, libtiff, eigen
 , Carbon ? null, Cocoa ? null
 }:
@@ -19,6 +19,8 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     glew
+    freeglut
+    libGL
     xorg.libX11
     ffmpeg_4
     libjpeg
