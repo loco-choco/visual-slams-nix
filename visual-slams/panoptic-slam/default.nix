@@ -9,8 +9,8 @@ in stdenv.mkDerivation {
   src = fetchFromGitHub {
     owner = "loco-choco";
     repo = "Panoptic-SLAM";
-    rev = "d1b4980e06365a1ba965922b6a23a61f2cde3192";
-    hash = "sha256-yRRJCzuwxh7oGrWp/TFQihKx1Ka2i67nOnZvPPaIDJM=";
+    rev = "3305ca80df5b6b90c55d4e5e42eab525b6377960";
+    hash = "sha256-gxHjaGC/KU9q6H+KQE74CQdZXiqZUSOxYHlE72HBxw8=";
   };
 
   nativeBuildInputs = [ cmake extra-cmake-modules pkg-config ];
