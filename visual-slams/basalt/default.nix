@@ -1,92 +1,78 @@
-{ stdenv,
-  lib,
+{
+  autoPatchelfHook,
   boost,
-  eigen,
-  tbb_2021_8,
-  fmt,
   bzip2,
-  opengv,
-  cli11,
-  magic-enum,
-  sophus,
-  cereal_1_3_2,
+  cereal,
+  cmake,
+  eigen,
+  extra-cmake-modules,
+  fetchFromGitLab,
+  fmt,
   freeglut,
   glew,
+  lib,
+  libepoxy,
   libGL,
+  lz4,
+  magic-enum,
+  nix-update-script,
   opencv,
-  pangolin_0_6,
-  basalt-headers,
-  fetchFromGitLab,
-  cmake,
   pkg-config,
-  autoPatchelfHook,
-  extra-cmake-modules
+  stdenv,
+  tbb,
+  xorg,
 }:
-stdenv.mkDerivation rec {
-  pname = "basalt";
-  version = "main-2024-02-12";
+stdenv.mkDerivation {
+  pname = "basalt-monado";
+  version = "0-unstable-2024-06-21";
 
   src = fetchFromGitLab {
     domain = "gitlab.freedesktop.org";
     owner = "mateosss";
-    repo = pname;
-    rev = "95dd2d7bc5fddaf893103fdc1d4fed687dcc327b";
-    hash = "sha256-awKxKOJP9+qyQQCKBq+d8b1zLXLsBIeouigOoi9vnyE=";
+    repo = "basalt";
+    rev = "385c161f35720df3a6c606054565f9d49a1c5787";
+    hash = "sha256-+2/pc2OWDwE04xPcfHL5GGyhQ1ZTN6o7cCNAilDgd2Y=";
+    fetchSubmodules = true;
   };
-
-  headers-src = fetchFromGitLab {
-    domain = "gitlab.freedesktop.org";
-    owner = "mateosss";
-    repo = "basalt-headers";
-    rev = "28b09b3a5802d44835655778cdd9b1974569bd47";
-    hash = "sha256-gCHCB/1hEy3R/MGexdbq3tIz30Ciw2QmmAqz5wjKhM0="; 
-  };
-
-  postUnpack = ''
-    rm -r source/thirdparty/basalt-headers
-    ln -s ${headers-src} source/thirdparty/basalt-headers
-  '';
 
   nativeBuildInputs = [
+    autoPatchelfHook
     cmake
-    cli11
     extra-cmake-modules
     pkg-config
-    autoPatchelfHook
   ];
 
-  buildInputs = [ 
+  buildInputs = [
     boost
-    eigen
-    tbb_2021_8
-    fmt
     bzip2
-    opengv
-    cli11
-    magic-enum
-    sophus
-    cereal_1_3_2
+    cereal
+    eigen
+    fmt
     freeglut
     glew
+    libepoxy
     libGL
-    (opencv.override{ enableGtk2 = true; })
-    pangolin_0_6
-  ];
-
-  patches = [
-    ./cmake.patch
-    ./cmake-thirdparty.patch
-    ./cmake-thirdparty-apriltag.patch
-    ./remove-ros.patch
-    ./opengl.patch
+    lz4
+    magic-enum
+    opencv
+    tbb
+    xorg.libX11
   ];
 
   cmakeFlags = [
-    "-DBASALT_BUILTIN_EIGEN=OFF"
-    "-DBASALT_BUILTIN_SOPHUS=OFF"
-    "-DBASALT_BUILTIN_CEREAL=OFF"
-    "-DBASALT_INSTANTIATIONS_DOUBLE=OFF" 
-    "-DBUILD_TESTS=OFF"
-    #"-DBASALT_BUILD_SHARED_LIBRARY_ONLY=TRUE"
+    (lib.cmakeBool "BASALT_INSTANTIATIONS_DOUBLE" false)
+    (lib.cmakeBool "BUILD_TESTS" false)
+    (lib.cmakeFeature "EIGEN_ROOT" "${eigen}/include/eigen3")
   ];
+
+  passthru.updateScript = nix-update-script { };
+
+  meta = {
+    description = "A fork of Basalt improved for tracking XR devices with Monado";
+    homepage = "https://gitlab.freedesktop.org/mateosss/basalt";
+    license = lib.licenses.bsd3;
+    mainProgram = "basalt_vio";
+    maintainers = [ lib.maintainers.locochoco ];
+    platforms = lib.platforms.linux;
+  };
 }
