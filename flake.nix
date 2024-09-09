@@ -18,6 +18,7 @@
           orbslam2 = pkgs.orbslam2;
           dso = pkgs.dso;
           basalt = pkgs.basalt;
+          panoptic-slam = pkgs.panoptic-slam;
           pangolin_0_6 = pkgs.pangolin_0_6;
           dm-vio = pkgs.dm-vio;
           gtsam = pkgs.gtsam;
