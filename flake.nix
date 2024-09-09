@@ -1,9 +1,6 @@
 {
   description = "A Nix flake for some Visual Slam Libs";
-  inputs = {
-    flake-compat.url = "https://flakehub.com/f/edolstra/flake-compat/1.tar.gz";
-    nixpkgs.url = "github:NixOS/nixpkgs/master";
-  };
+  inputs = { nixpkgs.url = "github:NixOS/nixpkgs/master"; };
   outputs = { self, flake-utils, nixpkgs }:
     flake-utils.lib.eachDefaultSystem (system:
       let
@@ -11,8 +8,8 @@
           inherit system;
           overlays = [ self.overlay.visual-slam ];
         };
-      in rec {
-        packages = rec {
+      in {
+        packages = {
           scenelib2 = pkgs.scenelib2;
           scenelib2-example = pkgs.scenelib2-example;
           g20 = pkgs.g20;
