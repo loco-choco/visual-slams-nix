@@ -1,6 +1,21 @@
-{ stdenv, lib, fetchFromGitHub, cmake, pkg-config, doxygen, glew, freeglut, libGL
-, xorg, ffmpeg_4, libjpeg, libpng, libtiff, eigen
-, Carbon ? null, Cocoa ? null
+{
+  stdenv,
+  lib,
+  fetchFromGitHub,
+  cmake,
+  pkg-config,
+  doxygen,
+  glew,
+  freeglut,
+  libGL,
+  xorg,
+  ffmpeg_4,
+  libjpeg,
+  libpng,
+  libtiff,
+  eigen,
+  Carbon ? null,
+  Cocoa ? null,
 }:
 
 stdenv.mkDerivation rec {
@@ -15,20 +30,28 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-fKteOuOuGMWPZFxOUGCUcjeLXtTUXSGMSs1QfM5qblU=";
   };
 
-  nativeBuildInputs = [ cmake pkg-config doxygen ];
+  nativeBuildInputs = [
+    cmake
+    pkg-config
+    doxygen
+  ];
 
-  buildInputs = [
-    glew
-    freeglut
-    libGL
-    xorg.libX11
-    ffmpeg_4
-    libjpeg
-    libpng
-    libtiff
-    eigen
-  ]
-  ++ lib.optionals stdenv.isDarwin [ Carbon Cocoa ];
+  buildInputs =
+    [
+      glew
+      freeglut
+      libGL
+      xorg.libX11
+      ffmpeg_4
+      libjpeg
+      libpng
+      libtiff
+      eigen
+    ]
+    ++ lib.optionals stdenv.isDarwin [
+      Carbon
+      Cocoa
+    ];
 
   # The tests use cmake's findPackage to find the installed version of
   # pangolin, which isn't what we want (or available).
@@ -57,4 +80,3 @@ stdenv.mkDerivation rec {
     platforms = lib.platforms.all;
   };
 }
-

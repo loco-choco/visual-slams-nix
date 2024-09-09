@@ -1,4 +1,5 @@
-{ stdenv,
+{
+  stdenv,
   lib,
   boost,
   eigen,
@@ -15,7 +16,7 @@
   cmake,
   pkg-config,
   autoPatchelfHook,
-  extra-cmake-modules
+  extra-cmake-modules,
 }:
 stdenv.mkDerivation rec {
   pname = "dm-vio";
@@ -35,7 +36,7 @@ stdenv.mkDerivation rec {
     autoPatchelfHook
   ];
 
-  buildInputs = [ 
+  buildInputs = [
     boost
     eigen
     gtsam
@@ -43,7 +44,7 @@ stdenv.mkDerivation rec {
     yaml-cpp
     libzip
     suitesparse
-    (opencv.override{ enableGtk2 = true; })
+    (opencv.override { enableGtk2 = true; })
     freeglut
     glew
     pangolin_0_6

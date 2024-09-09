@@ -1,10 +1,11 @@
-{ lib
-, stdenv
-, boost
-, eigen
-, tbb
-, fetchFromGitHub
-, cmake
+{
+  lib,
+  stdenv,
+  boost,
+  eigen,
+  tbb,
+  fetchFromGitHub,
+  cmake,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
@@ -36,7 +37,7 @@ stdenv.mkDerivation (finalAttrs: {
   meta = {
     description = "A library of C++ classes that implement smoothing and mapping (SAM) in robotics and vision";
     homepage = "https://gtsam.org/";
-    license = lib.licenses.bsd3; 
+    license = lib.licenses.bsd3;
     maintainers = [ lib.maintainers.locochoco ];
     platforms = lib.platforms.all;
   };

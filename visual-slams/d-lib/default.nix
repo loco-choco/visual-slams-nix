@@ -1,9 +1,10 @@
-{ lib
-, stdenv
-, boost
-, opencv
-, fetchFromGitHub
-, cmake
+{
+  lib,
+  stdenv,
+  boost,
+  opencv,
+  fetchFromGitHub,
+  cmake,
 }:
 
 stdenv.mkDerivation rec {

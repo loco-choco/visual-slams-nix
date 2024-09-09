@@ -1,9 +1,10 @@
-{ lib
-, stdenv
-, boost
-, opencv
-, fetchFromGitHub
-, cmake
+{
+  lib,
+  stdenv,
+  boost,
+  opencv,
+  fetchFromGitHub,
+  cmake,
 }:
 
 stdenv.mkDerivation rec {
@@ -34,7 +35,6 @@ stdenv.mkDerivation rec {
   patches = [
     ./cmake.patch
   ];
-
 
   meta = with lib; {
     description = "Enhanced hierarchical bag-of-word library for C";

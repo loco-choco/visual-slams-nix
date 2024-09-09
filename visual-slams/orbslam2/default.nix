@@ -1,4 +1,5 @@
-{ stdenv,
+{
+  stdenv,
   lib,
   boost,
   eigen,
@@ -12,7 +13,7 @@
   fetchFromGitHub,
   cmake,
   pkg-config,
-  extra-cmake-modules
+  extra-cmake-modules,
 }:
 stdenv.mkDerivation rec {
   name = "orbslam2";
@@ -22,7 +23,7 @@ stdenv.mkDerivation rec {
     owner = "raulmur";
     repo = "ORB_SLAM2";
     rev = "f2e6f51cdc8d067655d90a78c06261378e07e8f3";
-    hash = "sha256-19pY3nlVilVPXlMtKM4A8Z3cCZl/wkHQYqmvJohAYPg="; 
+    hash = "sha256-19pY3nlVilVPXlMtKM4A8Z3cCZl/wkHQYqmvJohAYPg=";
   };
 
   nativeBuildInputs = [
@@ -31,7 +32,7 @@ stdenv.mkDerivation rec {
     pkg-config
   ];
 
-  buildInputs = [ 
+  buildInputs = [
     boost
     eigen
     g20
@@ -48,10 +49,10 @@ stdenv.mkDerivation rec {
     ./include.patch
     ./examples.patch
   ];
-#   preConfigure = ''
-#    export CMAKE_PREFIX_PATH="$src:$CMAKE_PREFIX_PATH"
-#    echo $CMAKE_PREFIX_PATH
-#  '';
+  #   preConfigure = ''
+  #    export CMAKE_PREFIX_PATH="$src:$CMAKE_PREFIX_PATH"
+  #    echo $CMAKE_PREFIX_PATH
+  #  '';
   #buildPhase = ''
   #  sh $src/build.sh
   #'';

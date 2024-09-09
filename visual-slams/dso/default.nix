@@ -1,15 +1,16 @@
-{ lib
-, stdenv
-, suitesparse
-, eigen
-, boost
-, libzip
-, pangolin_0_6
-, opencv
-, fmt
-, sophus
-, fetchFromGitHub
-, cmake
+{
+  lib,
+  stdenv,
+  suitesparse,
+  eigen,
+  boost,
+  libzip,
+  pangolin_0_6,
+  opencv,
+  fmt,
+  sophus,
+  fetchFromGitHub,
+  cmake,
 }:
 
 stdenv.mkDerivation rec {
@@ -23,9 +24,7 @@ stdenv.mkDerivation rec {
     hash = "sha256-jwRgNp4DuFdzmuCRjm47bnXonA4Y/gdbdZyRBbwJV7g=";
   };
 
-  nativeBuildInputs = [
-    cmake
-  ];
+  nativeBuildInputs = [ cmake ];
 
   buildInputs = [
     suitesparse
