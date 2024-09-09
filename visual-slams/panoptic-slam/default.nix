@@ -1,17 +1,31 @@
-{ stdenv, boost, eigen, g20, dbow2, d-lib, opencv, freeglut, glew, pangolin
-, fetchFromGitHub, cmake, pkg-config, extra-cmake-modules, }:
-stdenv.mkDerivation {
+{ stdenv, boost, eigen, python312, python312Packages, opencv, freeglut
+, librealsense, glew, pangolin, fetchFromGitHub, cmake, pkg-config
+, extra-cmake-modules, openssl, cudaPackages }:
+let pythonPackages = python312Packages;
+in stdenv.mkDerivation {
   name = "panoptic-slam";
-  version = "0-unstable-23-05-2024";
+  version = "0-unstable-09-09-2024";
 
   src = fetchFromGitHub {
-    owner = "iit-DLSLab";
+    owner = "loco-choco";
     repo = "Panoptic-SLAM";
-    rev = "e3f9e56d867c36cd3100ce31151d50ebaaa98de7";
-    hash = "sha256-rMNQrjUJZ1Xx8MqPVQ81q9vqQwIBVx/615uoue2A7lM=";
+    rev = "d1b4980e06365a1ba965922b6a23a61f2cde3192";
+    hash = "sha256-yRRJCzuwxh7oGrWp/TFQihKx1Ka2i67nOnZvPPaIDJM=";
   };
 
   nativeBuildInputs = [ cmake extra-cmake-modules pkg-config ];
 
-  buildInputs = [ boost eigen g20 dbow2 d-lib opencv freeglut glew pangolin ];
+  buildInputs = [
+    boost
+    python312
+    pythonPackages.numpy
+    eigen
+    librealsense
+    cudaPackages.cudatoolkit
+    openssl
+    opencv
+    freeglut
+    glew
+    pangolin
+  ];
 }
