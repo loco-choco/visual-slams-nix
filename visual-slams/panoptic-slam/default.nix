@@ -1,7 +1,19 @@
-{ stdenv, boost, eigen, python312, python312Packages, opencv, freeglut
-, librealsense, glew, pangolin, fetchFromGitHub, cmake, pkg-config
-, extra-cmake-modules, openssl, cudaPackages }:
-let pythonPackages = python312Packages;
+{ stdenv, boost, freeglut, glew, pangolin, eigen, python3, opencv, librealsense
+, fetchFromGitHub, cmake, pkg-config, extra-cmake-modules, openssl, cudaPackages
+}:
+let
+  opencv-gtk = opencv.override { enableGtk2 = true; };
+  python-env = python3.withPackages (ps:
+    with ps; [
+      numpy
+      (opencv4.override { enableGtk2 = true; })
+      easydict
+      pyyaml
+      (detectron2.override { torch = torchWithCuda; })
+      torchWithCuda
+      (torchvision.override { torch = torchWithCuda; })
+      #(torch.override { cudaSupport = true; })
+    ]);
 in stdenv.mkDerivation {
   name = "panoptic-slam";
   version = "0-unstable-09-09-2024";
@@ -17,13 +29,12 @@ in stdenv.mkDerivation {
 
   buildInputs = [
     boost
-    python312
-    pythonPackages.numpy
+    python-env
     eigen
     librealsense
     cudaPackages.cudatoolkit
     openssl
-    opencv
+    opencv-gtk
     freeglut
     glew
     pangolin
