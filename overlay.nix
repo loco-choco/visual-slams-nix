@@ -6,6 +6,7 @@ final: prev: {
   d-lib = final.pkgs.callPackage ./visual-slams/d-lib { };
   dbow2 = final.pkgs.callPackage ./visual-slams/dbow2 { };
   orbslam2 = final.pkgs.callPackage ./visual-slams/orbslam2 { };
+  orbslam3 = final.pkgs.callPackage ./visual-slams/orbslam3 { };
   dso = final.pkgs.callPackage ./visual-slams/dso { };
   basalt = final.pkgs.callPackage ./visual-slams/basalt { };
   panoptic-slam = final.pkgs.callPackage ./visual-slams/panoptic-slam { };

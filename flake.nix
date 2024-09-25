@@ -16,6 +16,7 @@
           d-lib = pkgs.d-lib;
           dbow2 = pkgs.dbow2;
           orbslam2 = pkgs.orbslam2;
+          orbslam3 = pkgs.orbslam3;
           dso = pkgs.dso;
           basalt = pkgs.basalt;
           panoptic-slam = pkgs.panoptic-slam;
